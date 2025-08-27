@@ -1,0 +1,123 @@
+﻿@page "/sendapraise"
+@rendermode InteractiveServer
+@inject IPraiseLogic praiseLogic
+@inject IPraiseTypeLogic praiseTypeLogic
+@using BlazorBootstrap
+@using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Events
+@using Praise.Models;
+
+<h3>Send A Praise</h3>
+@* <button class="btn btn-primary" @onclick="SendPraise">TEST: Click me</button> *@
+
+@if (!PraiseSent)
+{
+    @if(ShowSummary())
+    {
+        <div>
+            <h4>Summary</h4>
+            <ul>
+                <li>Type: @selectedPraiseType.Description</li>
+                @if(InReview)
+                {
+                    <li>To: @RecipientEmail</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if(selectedPraiseType == null)
+    {
+        <h5>Select Praise Type</h5>
+        <ul>
+            @foreach (var praiseType in praiseTypes)
+            {
+                <li>
+                    <Button @onclick="() => SelectedPraiseType(praiseType)" Color="@ButtonColor.Primary">@praiseType.Description</Button>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (selectedPraiseType != null && !InReview)
+    {
+        <TextInput @bind-Value="@RecipientEmail" Placeholder="Enter email address" />
+        <Button Color="ButtonColor.Success" Class="float-end me-2" @onclick="ReviewAndSend">Review & Send</Button>
+    }
+
+    @if (InReview)
+    {
+        <Button Color="ButtonColor.Success" Class="float-end me-2" @onclick="SendPraise">Send It!</Button>    
+    }
+}
+else
+{
+    <div>Well done! Add amazing fact about dopamine through praise...</div>
+}
+
+@code {
+    private IList<PraiseTypeMetadata> praiseTypes = new List<PraiseTypeMetadata>();
+    private PraiseTypeMetadata selectedPraiseType = null;
+    private string RecipientEmail = null;
+    private bool InReview = false;
+    private bool PraiseSent = false;
+
+    protected async Task SendPraise()
+    {
+        // send the praise to the recipient and confirmation to user
+        praiseLogic.PublishSendPraiseEvent("todo - add message and recipient");
+        PraiseSent = true;
+    }
+
+    protected async Task ReviewAndSend()
+    {
+        // trigger summary view before sending
+        InReview = true;
+    }
+
+    protected bool ShowSummary()
+    {
+        return selectedPraiseType != null;
+    }
+
+    protected async Task SelectedPraiseType(PraiseTypeMetadata praiseType)
+    {
+        // add to summary, hide rest and move to next section
+        selectedPraiseType = praiseType;
+    }
+
+    //private async Task SendPraise()
+    protected override async Task OnInitializedAsync()
+    {
+        // // Create a publisher
+        // praiseLogic = new PraiseLogic();
+
+        // // Create some subscribers
+        // badgeLogic = new BadgeLogic();
+        // //Subscriber subscriber2 = new Subscriber("Subscriber B");
+
+        // // Subscribe to the event
+        // praiseLogic.SendPraisePublished += badgeLogic.OnSendPraiseReceived;
+        // //publisher.MessagePublished += subscriber2.OnMessageReceived;
+
+        //praiseLogic.PublishSendPraiseEvent("Hello, subscribers!");
+
+        praiseTypes = await praiseTypeLogic.GetPraiseTypes();
+    }
+    /*
+     * When sending a praise the following events must occur:
+     * > capture:
+     *      person's email(in future FB / Insta / Company contact)
+     *      type of praise
+     *      selected image
+     * > send an email with a link to the website with details of praise
+     * > check if badge is earned as a result of the action
+     * Design:
+     *  trigger event of type 'praiseGiven'
+     *  2 subscribers:
+     *      i. PraiseNotifier (email initially, other forms later)
+     *      ii. BadgeChecker
+     */
+
+    
+}

@@ -1,0 +1,22 @@
+﻿@page "/account/login"
+@using Auth0.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http
+@using Praise.WebApp.Logic
+@inject IHttpContextAccessor _contextAccessor
+@rendermode InteractiveServer
+
+<h3>Login...</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var redirectUri = "/account/callback";
+        var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
+            .WithRedirectUri(redirectUri)
+            .Build();
+
+        var ctx = _contextAccessor.HttpContext;
+        await ctx.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+    }
+}

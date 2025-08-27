@@ -1,0 +1,16 @@
+﻿namespace Praise.WebApp.Logic.Events.EventBindings
+{
+    public interface ISendPraiseEventBindings
+    {
+        Task Bind();
+    }
+
+    public class SendPraiseEventBindings(IPraiseLogic _praiseLogic, ISendPraiseReceivedEvent _badgeLogic) : ISendPraiseEventBindings
+    {
+        public async Task Bind()
+        { 
+            // TODO separate subscribing from publishing
+            _praiseLogic.SendPraisePublished += _badgeLogic.OnSendPraiseReceived;
+        }
+    }
+}

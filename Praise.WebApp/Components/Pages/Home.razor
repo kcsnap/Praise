@@ -1,0 +1,88 @@
+﻿@page "/"
+@using Praise.WebApp.Logic
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello @Name</h1>
+<a href="https://auth0.com/blog/what-is-blazor-tutorial-on-building-webapp-with-authentication/#Securing-the-Application-with-Auth0">Auth0 Tutorial</a>
+
+@if (RecentActivity.TotalNumberOfPraisesSent.HasValue)
+{
+    <p>You've sent a total of @RecentActivity.TotalNumberOfPraisesSent!</p>
+}
+else
+{
+    <p>Send your <a href="/sendapraise">First Praise</a> now!</p>
+}
+
+<h3>Recent Praises Sent</h3>
+<table>
+    <tr>
+        @if (RecentActivity != null && RecentActivity.PraisesSent != null)
+        {
+            @foreach(var sent in RecentActivity.PraisesSent)
+            {
+                <td>
+                    <span>@sent.To: @sent.Text</span>
+                </td>
+            }
+        }
+        <td>
+            <a href="/sendapraise">Send a Praise</a> | <a href="/praisessent">View all</a>
+        </td>
+    </tr>
+</table>
+
+<hr />
+
+<h3>Recent Praises Received</h3>
+<table>
+    <tr>
+        @if (RecentActivity != null && RecentActivity.PraisesReceived != null)
+        {
+            @foreach (var sent in RecentActivity.PraisesReceived)
+            {
+                <td>
+                    <span>@sent.From: @sent.Text</span>
+                </td>
+            }
+        }
+        <td>
+            <a href="/praisesreceived">View all</a>
+        </td>
+    </tr>
+</table>
+
+<hr />
+
+<h3>Recent Badges Earned</h3>
+<table>
+    <tr>
+        @if (RecentActivity != null && RecentActivity.BadgesReceived != null)
+        {
+            @foreach (var badge in RecentActivity.BadgesReceived)
+            {
+                <td>
+                    <span>@badge.Text</span>
+                </td>
+            }
+        }
+        <td>
+            <a href="/badgesearned">View all</a>
+        </td>
+    </tr>
+</table>
+
+@code {
+    string Name = "";
+    RecentActivity RecentActivity = new RecentActivity();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        var recentActivityLogic = new RecentActivityLogic();
+        RecentActivity = await  recentActivityLogic.GetRecentActivityForUser("123");
+    }
+}

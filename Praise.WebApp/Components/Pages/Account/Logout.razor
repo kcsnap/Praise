@@ -1,0 +1,25 @@
+﻿@page "/account/logout"
+@using Auth0.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _contextAccessor
+
+<h3>Logout</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
+            // Indicate here where Auth0 should redirect the user after a logout.
+            // Note that the resulting absolute Uri must be added to the
+            // **Allowed Logout URLs** settings for the app.
+            .WithRedirectUri("/")
+            .Build();
+
+        var ctx = _contextAccessor.HttpContext;
+        await ctx.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+        await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+}

@@ -1,0 +1,6 @@
+@Gamey.Api_HostAddress = http://localhost:5186
+
+GET {{Gamey.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

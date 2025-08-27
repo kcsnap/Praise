@@ -1,0 +1,32 @@
+﻿@page "/account/callback"
+@* @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage *@
+@inject IHttpContextAccessor _contextAccessor
+@* @inject ProtectedLocalStorage ProtectedLocalStore *@
+@inject NavigationManager NavigationManager
+
+<h3>Failed Login</h3>
+<p>Please try again</p>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // save the user's information in the local storage
+        var ctx = _contextAccessor.HttpContext;
+        if (ctx.User.Identity.IsAuthenticated)
+        {
+            // TODO - LOG THEN REDIRECT!
+            // var user = ctx.User;
+            // var userInfo = new
+            // {
+            //     Name = user.Identity.Name,
+            //     Email = user.FindFirst("email")?.Value,
+            //     Picture = user.FindFirst("picture")?.Value
+            // };
+            // Here you would typically save the userInfo to local storage or session
+            // For example, using a JavaScript interop call to save it in local storage
+            // await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", JsonSerializer.Serialize(userInfo));
+            //await ProtectedLocalStore.SetAsync("name", userInfo.Name);
+            NavigationManager.NavigateTo("");
+        }
+    }
+}
