@@ -1,6 +1,6 @@
 ﻿
-// TODO
-// Get into GIT WED
+// TODO:
+// DONE Get into GIT WED
 // Email notification for sent praise WED
 // Build Badge checker for sent praise WED
 // Log all activity to AWS CloudWatch? in Praise App THU
