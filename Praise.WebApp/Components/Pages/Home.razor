@@ -1,5 +1,8 @@
 ﻿@page "/"
+@inject IRecentActivityLogic recentActivityLogic
+@using Praise.Models
 @using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Interfaces
 
 <PageTitle>Home</PageTitle>
 
@@ -81,8 +84,6 @@ else
     {
         // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
-
-        var recentActivityLogic = new RecentActivityLogic();
-        RecentActivity = await  recentActivityLogic.GetRecentActivityForUser("123");
+        //RecentActivity = await recentActivityLogic.GetRecentActivityForUser("123");
     }
 }

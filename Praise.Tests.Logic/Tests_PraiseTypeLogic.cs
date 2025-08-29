@@ -8,7 +8,7 @@ namespace Praise.Tests.Logic
         [TestMethod]
         public async Task WHENGetPraiseType_THENReturnDictionary()
         {
-            WebApp.Logic.PraiseTypeLogic praiseType = new WebApp.Logic.PraiseTypeLogic();
+            WebApp.Logic.PraiseTypeLogic praiseType = new WebApp.Logic.PraiseTypeLogic(new PraiseApi());
             var types = await praiseType.GetPraiseTypes();
             Assert.AreEqual(3, types.Count);
 

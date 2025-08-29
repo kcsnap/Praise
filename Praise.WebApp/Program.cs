@@ -1,17 +1,16 @@
-﻿
-// TODO:
+﻿// TODO:
 // DONE Get into GIT WED
-// Email notification for sent praise WED
-// Build Badge checker for sent praise WED
-// Log all activity to AWS CloudWatch? in Praise App THU
-// Deploy to EC2 THU
-
+// Move logic to Praise.API out of PraiseWeb to benefit MobileApp
+// Email notification for sent praise
+// Build Badge checker for sent praise
+// OpenAPI for documentation
+// Log all activity to AWS CloudWatch? in Praise App
+// Deploy to EC2
 
 using Auth0.AspNetCore.Authentication;
 using Praise.WebApp.Components;
 using Praise.WebApp.Logic;
-using Praise.WebApp.Logic.Events;
-using Praise.WebApp.Logic.Events.EventBindings;
+using Praise.WebApp.Logic.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,14 +20,11 @@ builder.Services.AddRazorComponents()
 
 //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IPraiseApi, PraiseApi>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseTypeLogic, PraiseTypeLogic>();
-
-// event bindings
-builder.Services.AddSingleton<ISendPraiseEventBindings, SendPraiseEventBindings>();
-builder.Services.AddSingleton<ISendPraiseReceivedEvent, SubscribeSendPraiseBadgeEvent>();
-builder.Services.AddSingleton<ISendPraiseReceivedEvent, SubscribeSendPraiseNotificationEvent>();
+builder.Services.AddSingleton<IRecentActivityLogic, RecentActivityLogic>();
 
 builder.Services.AddBlazorBootstrap();
 
@@ -58,13 +54,6 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
    .AddInteractiveServerRenderMode();
-
-//var sendPraiseEvents = app.Services.GetService<ISendPraiseEventBindings>();
-//await sendPraiseEvents.Bind();
-
-//var httpContext = app.Services.GetService<IHttpContextAccessor>();
-var eventManager = new AppEventManager();
-await eventManager.Initialise(app);
 
 app.Run();
 

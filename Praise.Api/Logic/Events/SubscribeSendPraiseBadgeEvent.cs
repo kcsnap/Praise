@@ -1,6 +1,8 @@
-﻿using System.Xml.Linq;
+﻿using Praise.Api.Logic.Interfaces;
+using Praise.WebApp.Logic;
+using System.Xml.Linq;
 
-namespace Praise.WebApp.Logic
+namespace Praise.Api.Logic.Events
 {
     public class SubscribeSendPraiseBadgeEvent : ISendPraiseReceivedEvent
     {

@@ -1,13 +1,10 @@
 ﻿using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public interface IPraiseAuthentication
-    {
-        Task Authenticate();
-    }
 
     public class PraiseAuthentication : PageModel, IPraiseAuthentication
     {

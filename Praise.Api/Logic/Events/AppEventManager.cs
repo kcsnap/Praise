@@ -1,4 +1,6 @@
-﻿namespace Praise.WebApp.Logic.Events
+﻿using Praise.Api.Logic.Interfaces;
+
+namespace Praise.WebApp.Logic.Events
 {
     public class AppEventManager
     {

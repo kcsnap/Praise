@@ -1,30 +1,13 @@
-﻿using Praise.WebApp.Logic.Events.EventBindings;
+﻿using Praise.Models;
+using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseLogic : IPraiseLogic
+    public class PraiseLogic(IPraiseApi praiseApi) : IPraiseLogic
     {
-        public event EventHandler<SendPraiseEventArgs> SendPraisePublished;
-
-        public void PublishSendPraiseEvent(string message)
+        public async Task<PraiseSent> SendPraise(string message)
         {
-            OnMessagePublished(new SendPraiseEventArgs(message));
-        }
-
-        protected virtual void OnMessagePublished(SendPraiseEventArgs e)
-        {
-            SendPraisePublished?.Invoke(this, e);
-        }
-    }
-
-    public class SendPraiseEventArgs : EventArgs
-    {
-        public string Message { get; }
-
-        public SendPraiseEventArgs(string message)
-        {
-            Message = message;
+            return await praiseApi.PostAsync<PraiseSent>(PraiseApi.PraiseUrl);
         }
     }
 }
-

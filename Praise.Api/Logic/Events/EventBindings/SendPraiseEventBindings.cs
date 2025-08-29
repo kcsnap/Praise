@@ -1,4 +1,6 @@
-﻿namespace Praise.WebApp.Logic.Events.EventBindings
+﻿using Praise.Api.Logic.Interfaces;
+
+namespace Praise.WebApp.Logic.Events.EventBindings
 {
     public interface ISendPraiseEventBindings
     {

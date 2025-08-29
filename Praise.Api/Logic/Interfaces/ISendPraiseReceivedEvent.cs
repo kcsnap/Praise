@@ -1,4 +1,6 @@
-﻿namespace Praise.WebApp.Logic
+﻿using Praise.WebApp.Logic;
+
+namespace Praise.Api.Logic.Interfaces
 {
     public interface ISendPraiseReceivedEvent
     {
