@@ -9,6 +9,7 @@ namespace Praise.WebApp.Logic
     {
         protected HttpClient client;
         protected IHttpContextAccessor _contextAccessor;
+        protected string bearerToken;
 
         public PraiseApi(IHttpContextAccessor contextAccessor)
         {
@@ -33,9 +34,8 @@ namespace Praise.WebApp.Logic
             var authClient = new HttpClient();
             var response = Task.Run(async () => await authClient.PostAsync(url, formData)).Result;
             var content = Task.Run(response.Content.ReadAsStringAsync).Result;
-            var bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
+            bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
-            // reset for targetted request
             client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             client.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
@@ -74,6 +74,8 @@ namespace Praise.WebApp.Logic
         }
         public async Task<T> CallApi<T>(HttpMethods httpMethod, string url, T? payloadObject)
         {
+            if (client == null) Initialise();
+
             HttpResponseMessage response;
             var path = BasePraiseUrl + url;
 
@@ -85,13 +87,6 @@ namespace Praise.WebApp.Logic
                 }
                 else // if(httpMethod == HttpMethods.POST)
                 {
-                    string payload = string.Empty;
-                    if (payloadObject != null)
-                    {
-                        payload = JsonSerializer.Serialize(payloadObject);
-                    }
-
-                    //response = await client.PostAsJsonAsync(path, payload);
                     response = await client.PostAsJsonAsync<T>(path, payloadObject);
                 }
 
