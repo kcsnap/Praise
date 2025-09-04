@@ -4,34 +4,14 @@
     {
         public async Task<DailyStreakRewardNamesEnum> IsStreakReward(int streakNumber)
         {
-
-            // TODO change to switch statement for multiple
-            if (streakNumber < 0)
+            switch(streakNumber)
             {
-                throw new Exception("Negative values not allowed!");
-            }
-            else if (streakNumber == 1) 
-            { 
-                return DailyStreakRewardNamesEnum.Day1Reward; 
-            }
-            else if (streakNumber == 2)
-            {
-                return DailyStreakRewardNamesEnum.Day2Reward;
-            }
-
-            else if (streakNumber == 3)
-            {
-                return DailyStreakRewardNamesEnum.Day3Reward;
-            }
-
-            else if (streakNumber == 5)
-            {
-                return DailyStreakRewardNamesEnum.Day5Reward;
-            }
-
-            else if (streakNumber == 10)
-            {
-                return DailyStreakRewardNamesEnum.Day10Reward;
+                case < 0: throw new Exception("Negative values not allowed!");
+                case 1: return DailyStreakRewardNamesEnum.Day1Reward;
+                case 2: return DailyStreakRewardNamesEnum.Day2Reward;
+                case 3: return DailyStreakRewardNamesEnum.Day3Reward;
+                case 5: return DailyStreakRewardNamesEnum.Day5Reward;
+                case 10:return DailyStreakRewardNamesEnum.Day10Reward;
             }
 
             // if streaknumber not matched then return no reward

@@ -5,7 +5,6 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-
     public class PraiseAuthentication : PageModel, IPraiseAuthentication
     {
         private readonly IHttpContextAccessor _contextAccessor;

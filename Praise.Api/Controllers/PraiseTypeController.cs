@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Praise.Api.Logic;
 using Praise.Models;
 
 namespace Praise.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class PraiseTypeController
+    public class PraiseTypeController(IHttpContextAccessor _contextAccessor)
     {
         [HttpGet(Name = "GetPraiseTypes")]
         public async Task<IList<PraiseTypeMetadata>> Get()

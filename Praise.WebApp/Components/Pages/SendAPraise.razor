@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IPraiseLogic praiseLogic
 @inject IPraiseTypeLogic praiseTypeLogic
+@inject IHttpContextAccessor httpContextAccessor
 @using BlazorBootstrap
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
@@ -65,7 +66,11 @@ else
     protected async Task SendPraise()
     {
         // send the praise to the recipient and confirmation to user
-        praiseLogic.SendPraise("todo - add message and recipient");
+        await praiseLogic.SendPraise(
+            httpContextAccessor.HttpContext.User.Identity.Name,
+            RecipientEmail,
+            selectedPraiseType
+        );
         PraiseSent = true;
     }
 

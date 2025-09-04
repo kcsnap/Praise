@@ -1,6 +1,9 @@
 ﻿// TODO:
 // DONE Get into GIT WED
-// Move logic to Praise.API out of PraiseWeb to benefit MobileApp
+// DONE Move logic to Praise.API out of PraiseWeb to benefit MobileApp
+// Security of APIS - https://auth0.com/blog/securing-aspnet-minimal-webapis-with-auth0/
+// auth call based on Auth0 API
+// User management 
 // Email notification for sent praise
 // Build Badge checker for sent praise
 // OpenAPI for documentation
@@ -18,7 +21,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-//builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IPraiseApi, PraiseApi>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
@@ -32,7 +34,26 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     options.Domain = builder.Configuration["Auth0:Domain"];
     options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.Scope = "openid profile email";
 });
+
+builder.Services.AddDistributedMemoryCache();
+
+//builder.Services.AddSession(options =>
+//{
+//    options.IdleTimeout = TimeSpan.FromSeconds(10);
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.IsEssential = true;
+//});
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+//                {
+//                    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
+//                    options.Audience = builder.Configuration["Auth0:Audience"];
+//                }); ;
+
+//builder.Services.AddAuthentication().AddJwtBearer();
 
 var app = builder.Build();
 
@@ -47,7 +68,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
+
+//app.UseSession();
 
 app.UseAntiforgery();
 

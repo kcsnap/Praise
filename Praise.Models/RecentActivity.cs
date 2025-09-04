@@ -9,9 +9,10 @@
     }
     public abstract class BasePraise
     {
-        public string Text { get; set; }
-        public string ImageUrl { get; set; }
-        public DateTime PraiseDate { get; set; }
+        public PraiseTypeEnum PraiseType { get; set; }
+        public string? Text { get; set; }
+        public string? ImageUrl { get; set; }
+        public DateTime? PraiseDate { get; set; }
     }
     public class PraiseSent : BasePraise
     {

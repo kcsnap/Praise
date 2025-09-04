@@ -1,52 +1,54 @@
 ﻿using brevo_csharp.Api;
-using brevoClientConfig = brevo_csharp.Client;
 using brevo_csharp.Model;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Praise.Api.Controllers;
-using Praise.Models;
+using Praise.Api.Logic.Events;
+using brevoClientConfig = brevo_csharp.Client;
 
 namespace Praise.Api.Logic
 {
-    public class EmailManagerLogic
+    public class EmailManagerLogic : IEmailManagerLogic
     {
         //private readonly ILogging logging;
         private readonly TransactionalEmailsApi apiInstance;
+        private readonly string apiKey;
+        private readonly string emailFrom;
 
         //public EmailManagerLogic(ILogging logging)
-        public EmailManagerLogic()
+        public EmailManagerLogic(IConfiguration configuration)
         {
             //this.logging = logging;
 
+            apiKey = configuration["Email:ApiKey"];
+            emailFrom = configuration["Email:EmailFrom"];
+
             // BREVO...
             // Configure API key authorization: api-key
-            brevoClientConfig.Configuration.Default.ApiKey.Add("api-key", "***REMOVED-S21***");
+            brevoClientConfig.Configuration.Default.ApiKey.Add("api-key", apiKey);
 
             apiInstance = new TransactionalEmailsApi();
         }
 
-        public async System.Threading.Tasks.Task SendEmail(string toEmail, string bodyString)
+        public async System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string bodyString)
         {
             // generate email
             var sendSmtpEmail = new SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
-            sendSmtpEmail.Sender = new SendSmtpEmailSender("kcox", "kcox@snapwire.co.uk");
+            // todo - pull from config
+            sendSmtpEmail.Sender = new SendSmtpEmailSender(emailFrom, emailFrom);
             sendSmtpEmail.To = new List<SendSmtpEmailTo>()
             {
                 new SendSmtpEmailTo(toEmail)
             };
-            sendSmtpEmail.Subject = "You're being celbrated";
-            sendSmtpEmail.HtmlContent = "<html><body><h4>" + bodyString + "</h4></body></html>";
+            sendSmtpEmail.Subject = subject;
+            sendSmtpEmail.HtmlContent = "<html><body>" + bodyString + "</body></html>";
 
             try
             {
-                //await logging.WriteMessage("EMAIL SENT: " + bodyString);
-
                 // Send a transactional email
-                CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
+                CreateSmtpEmail result = await apiInstance.SendTransacEmailAsync(sendSmtpEmail);
             }
             catch (Exception e)
             {
                 //await logging.WriteRecoverableError("EMAIL FAILURE: " + e.Message);
+                throw new NotImplementedException(e.Message, e);
             }
         }
     }

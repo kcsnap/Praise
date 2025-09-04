@@ -2,7 +2,8 @@
 {
     public interface IPraiseApi
     {
+        Task Initialise();
         Task<T> GetAsync<T>(string url);
-        Task<T> PostAsync<T>(string url, object? payload = null);
+        Task<T> PostAsync<T>(string url, T payload);
     }
 }

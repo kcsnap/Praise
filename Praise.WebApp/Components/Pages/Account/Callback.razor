@@ -1,8 +1,10 @@
 ﻿@page "/account/callback"
 @* @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage *@
+@using System.Net.Http.Headers;
+@using Praise.WebApp.Logic.Interfaces
 @inject IHttpContextAccessor _contextAccessor
-@* @inject ProtectedLocalStorage ProtectedLocalStore *@
 @inject NavigationManager NavigationManager
+@inject IPraiseApi PraiseApi
 
 <h3>Failed Login</h3>
 <p>Please try again</p>
@@ -14,6 +16,47 @@
         var ctx = _contextAccessor.HttpContext;
         if (ctx.User.Identity.IsAuthenticated)
         {
+            await PraiseApi.Initialise();
+
+            // // var client = new RestClient("https://dev-snapwire01.uk.auth0.com/oauth/token");
+            // // var request = new RestRequest(Method.POST);
+            // // request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            // // request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&audience=YOUR_API_IDENTIFIER", ParameterType.RequestBody);
+            // // IRestResponse response = client.Execute(request);
+            // using var client = new HttpClient();
+
+            // // Set the request URL
+            // var url = "https://dev-snapwire01.uk.auth0.com/oauth/token";
+
+            // // Prepare the form data
+            // var formData = new FormUrlEncodedContent(new[]
+            // {
+            //     new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            //     new KeyValuePair<string, string>("client_id", "0XRSfxmNOchXgmGztSDvh0kfMXLMV66R"),
+            //     new KeyValuePair<string, string>("client_secret", "***REMOVED-S21***"),
+            //     new KeyValuePair<string, string>("audience", "https://dev-snapwire01.uk.auth0.com/api/v2/")
+            // });
+
+            // // Send the POST request
+            // var response = await client.PostAsync(url, formData);
+
+            // // Read the response content
+            // var content = await response.Content.ReadAsStringAsync();
+
+            // var path = "https://localhost:7222/PraiseType";
+            // using var client2 = new HttpClient();
+
+            // var bearerToken = System.Text.Json.JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
+            // client2.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            // client2.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
+
+            // HttpResponseMessage response2 = await client2.GetAsync(path);
+            // if (response2.IsSuccessStatusCode)
+            // {
+            //     var result = await response2.Content.ReadAsAsync<string>();
+            //     //return result;
+            // }
+
             // TODO - LOG THEN REDIRECT!
             // var user = ctx.User;
             // var userInfo = new
