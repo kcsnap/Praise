@@ -29,4 +29,10 @@
         Day10Reward
         // TODO create more values and related tests 
     }
+
+    // replicate this file and create tests for:
+    // N per day Logic (i.e. you've sent 5 in 1 day, a new PB)
+    // N per week Logic (i.e. you've sent 50 in 1 week, a new PB)
+    // Received N (i.e. you've received 10 praises!)
+    // Received N unique praisers (i.e. you've received praise from 10 different people)
 }

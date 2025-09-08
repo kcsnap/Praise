@@ -1,6 +1,38 @@
 ﻿@page "/praisessent"
+@inject IPraiseLogic praiseLogic
+@using Praise.Models
+@using Praise.Models.Generic
+@using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Interfaces
+
 <h3>Praises Sent</h3>
 
-@code {
+<table>
+        @if(_PraisesSent != null)
+        {
+            foreach(var praise in _PraisesSent)
+            {
+            <tr>
+                <td>
+                    <span>
+                        @praise.ToEmail:<br />
+                        @praise.Text<br />
+                        @praise.PraiseDate.ToString("dd MMMM yyyy")<br />
+                    </span>
+                </td>
+            </tr>
+            }
+        }
+</table>
 
+@code {
+    IEnumerable<PraiseDetails> _PraisesSent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        StateHasChanged();
+        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
+        // await Task.Delay(2000);
+        _PraisesSent = await praiseLogic.GetPraisesSent();
+    }
 }

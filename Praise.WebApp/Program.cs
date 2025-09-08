@@ -1,14 +1,15 @@
 ﻿// TODO:
 // DONE Get into GIT WED
 // DONE Move logic to Praise.API out of PraiseWeb to benefit MobileApp
-// Security of APIS - https://auth0.com/blog/securing-aspnet-minimal-webapis-with-auth0/
-// auth call based on Auth0 API
-// User management 
-// Email notification for sent praise
+// DONE Security of APIS - https://auth0.com/blog/securing-aspnet-minimal-webapis-with-auth0/
+// DONE auth call based on Auth0 API
+// DONE Add cosmos db and save praise
+// DONE Email notification for sent praise
+// Read praises sent
+// Read praises received
 // Build Badge checker for sent praise
 // OpenAPI for documentation
-// Log all activity to AWS CloudWatch? in Praise App
-// Deploy to EC2
+// All security checks for pages and apis
 
 using Auth0.AspNetCore.Authentication;
 using Praise.WebApp.Components;

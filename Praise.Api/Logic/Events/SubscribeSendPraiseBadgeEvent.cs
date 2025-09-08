@@ -9,7 +9,7 @@ namespace Praise.Api.Logic.Events
         public void OnSendPraiseReceived(object sender, SendPraiseEventArgs e)
         {
             // TODO - check badges
-            Console.WriteLine($"Received message from {((PraiseLogic)sender).GetType().Name}: {e.ToEmail}");
+            Console.WriteLine($"Received message from {((PraiseLogic)sender).GetType().Name}: {e.PraiseDetails.ToEmail}");
         }
     }
 }

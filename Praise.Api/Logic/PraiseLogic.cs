@@ -1,35 +1,51 @@
-﻿using Praise.Models;
+﻿using Praise.Api.DataLayer;
+using Praise.Api.DataLayer.Interfaces;
+using Praise.Models;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseLogic : IPraiseLogic
+    public class PraiseLogic(IPraiseDetailsDataLayer praiseDetailsDataLayer) : IPraiseLogic
     {
         public event EventHandler<SendPraiseEventArgs> SendPraisePublished;
 
-        public async void PublishSendPraiseEvent(string toEmail, PraiseTypeEnum praiseType, string fromName, string fromEmail)
+        public async void PublishSendPraiseEvent(PraiseDetails praiseDetails)
         {
-            await OnMessagePublished(new SendPraiseEventArgs(toEmail, praiseType, fromName, fromEmail));
+            // commit to db then publish event
+            try
+            {
+                await praiseDetailsDataLayer.Save(praiseDetails);
+
+                // only send event on successful save
+                await OnMessagePublished(new SendPraiseEventArgs(praiseDetails));
+            }
+            catch (Exception ex)
+            {
+                // TODO - logging and rethrow with inner
+                throw new Exception("Failed Saving Praise", ex);
+            }
         }
 
         protected virtual async Task OnMessagePublished(SendPraiseEventArgs e)
         {
             SendPraisePublished?.Invoke(this, e);
         }
+
+        public async Task<IEnumerable<PraiseDetails>> GetPraiseDetails(string email, bool isSender, int? pageNumber, int? numberPerPage)
+        {
+            if(isSender)
+                return await praiseDetailsDataLayer.ReadByPraiseSenderEmail(email, pageNumber, numberPerPage);
+            else
+                return await praiseDetailsDataLayer.ReadByPraiseReceiverEmail(email, pageNumber, numberPerPage);
+        }
     }
 
     public class SendPraiseEventArgs : EventArgs
     {
-        public string ToEmail { get; }
-        public PraiseTypeEnum PraiseType { get; set; }
-        public string FromName { get; set; }
-        public string FromEmail { get; set; }
-
-        public SendPraiseEventArgs(string toEmail, PraiseTypeEnum praiseType, string fromName, string fromEmail)
+        public PraiseDetails PraiseDetails { get; private set; }
+        
+        public SendPraiseEventArgs(PraiseDetails _praiseDetails)
         {
-            ToEmail = toEmail;
-            FromName = fromName;
-            FromEmail = fromEmail;
-            PraiseType = praiseType;
+            PraiseDetails = _praiseDetails;
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Praise.Models;
 using Praise.WebApp.Logic;
-using System.Web.Http;
-using AuthorizeAttribute = Microsoft.AspNetCore.Authorization.AuthorizeAttribute;
-using HttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
+using WebHttpPostAttribute = System.Web.Http;
+using MvcHttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Praise.Api.Controllers
@@ -12,18 +11,37 @@ namespace Praise.Api.Controllers
     [Route("[controller]")]
     public class PraiseController(IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic)
     {
-        [HttpPost(Name = "PostPraise")]
-        public async Task<PraiseSent> Post(PraiseSent praiseSent)
+        /// <summary>
+        /// /praise?type=sent | received
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="HttpResponseException"></exception>
+        [WebHttpPostAttribute.HttpGet()]
+        public async Task<IEnumerable<PraiseDetails>> Get([FromQuery(Name = "issender")] bool isSender, [FromQuery(Name = "pagenumber")] int? pageNumber, [FromQuery(Name = "numberperpage")] int? numberPerPage)
         {
+            IEnumerable<PraiseDetails> praises;
+
             var email = _contextAccessor.HttpContext.Request.Headers["username"];
 
             if (string.IsNullOrEmpty(email))
-                throw new HttpResponseException(System.Net.HttpStatusCode.BadRequest);
+                throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
 
-            praiseLogic.PublishSendPraiseEvent(praiseSent.To, praiseSent.PraiseType, email, email);
-            //praiseLogic.PublishSendPraiseEvent(content);
+            praises = await praiseLogic.GetPraiseDetails(email, isSender, pageNumber, numberPerPage);
 
-            return new PraiseSent();
+            return praises;
+        }
+
+        [MvcHttpPost(Name = "PostPraise")]
+        public async Task<PraiseDetails> Post(PraiseDetails praiseSent)
+        {
+            var email = _contextAccessor.HttpContext.Request.Headers["username"];
+            
+            if (string.IsNullOrEmpty(email))
+                throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
+
+            praiseLogic.PublishSendPraiseEvent(praiseSent);
+
+            return praiseSent;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Praise.WebApp.Logic.Interfaces;
+﻿using Praise.Models.Generic;
+using Praise.WebApp.Logic.Interfaces;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -52,13 +53,36 @@ namespace Praise.WebApp.Logic
 
         public async Task<T> GetAsync<T>(string url)
         {
-            var path = BasePraiseUrl + url;
+            return await GetAsync<T>(url, null, string.Empty);
+        }
+
+        public async Task<T> GetAsync<T>(string url, string querystringParams = "")
+        {
+            return await GetAsync<T>(url, null, querystringParams);
+        }
+
+        public async Task<T> GetAsync<T>(string url, Paging paging)
+        {
+            return await GetAsync<T>(url, paging, string.Empty);
+        }
+
+        public async Task<T> GetAsync<T>(string url, Paging? paging, string querystringParams)
+        {
+            // handle querystring...
+            if (!string.IsNullOrEmpty(querystringParams) && paging != null)
+                // we have some query data to handle...
+                url += "?" + querystringParams + "&pagenumber=" + paging.PageNumber + "&numberperpage=" + paging.NumberPerPage;
+            else if (!string.IsNullOrEmpty(querystringParams))
+                url += "?" + querystringParams;
+            else if(paging != null)
+                url += "?pagenumber=" + paging.PageNumber + "&numberperpage=" + paging.NumberPerPage;
+            // else = add nothing...
+
             return await CallApi<T>(HttpMethods.GET, url);
         }
 
         public async Task<T> PostAsync<T>(string url, T payload)
         {
-            var path = BasePraiseUrl + url;
             return await CallApi<T>(HttpMethods.POST, url, payload);
         }
 
@@ -104,6 +128,11 @@ namespace Praise.WebApp.Logic
                 throw new NotImplementedException(e.Message, e);
             }
             catch (JsonException e)
+            {
+                //Console.WriteLine($"JSON Deserialization Exception: {e.Message}");
+                throw new NotImplementedException(e.Message, e);
+            }
+            catch (Exception e)
             {
                 //Console.WriteLine($"JSON Deserialization Exception: {e.Message}");
                 throw new NotImplementedException(e.Message, e);

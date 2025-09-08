@@ -1,7 +1,5 @@
 ﻿using Praise.Api.Logic.Interfaces;
 using Praise.WebApp.Logic;
-using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace Praise.Api.Logic.Events
 {
@@ -9,17 +7,17 @@ namespace Praise.Api.Logic.Events
     {
         public void OnSendPraiseReceived(object sender, SendPraiseEventArgs e)
         {
-            StreamReader reader = new StreamReader(contextAccessor.HttpContext.Request.Body);
-            string text = Task.Run(reader.ReadToEndAsync).Result;
+            //StreamReader reader = new StreamReader(contextAccessor.HttpContext.Request.Body);
+            //string text = Task.Run(reader.ReadToEndAsync).Result;
 
             string subject = "Congratulations! You're being celebrated!";
-            string body = e.PraiseType.GetDescription() + "<br/><br/>from " + e.FromName;
+            string body = e.PraiseDetails.PraiseType.GetDescription() + "<br/><br/>from " + e.PraiseDetails.FromEmail;
 
             // extract to and type from payload 
-            Task.Run(async() => emailManagerLogic.SendEmail(e.ToEmail, subject, body));
+            Task.Run(async() => emailManagerLogic.SendEmail(e.PraiseDetails.ToEmail, subject, body));
 
             // TODO - send notifications
-            Console.WriteLine($"Received message from {((PraiseLogic)sender).GetType().Name}: {e.ToEmail}");
+            Console.WriteLine($"Received message from {((PraiseLogic)sender).GetType().Name}: {e.PraiseDetails.ToEmail}");
         }
     }
 }

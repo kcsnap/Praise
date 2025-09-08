@@ -1,5 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Praise.Api.DataLayer;
+using Praise.Api.DataLayer.Interfaces;
 using Praise.Api.Logic;
 using Praise.Api.Logic.Events;
 using Praise.Api.Logic.Interfaces;
@@ -15,6 +17,7 @@ builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 
 // event bindings
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IPraiseDetailsDataLayer, PraiseDetailsDataLayer>();
 builder.Services.AddSingleton<IEmailManagerLogic, EmailManagerLogic>();
 builder.Services.AddSingleton<ISendPraiseEventBindings, SendPraiseEventBindings>();
 builder.Services.AddSingleton<ISendPraiseReceivedEvent, SubscribeSendPraiseBadgeEvent>();
@@ -28,8 +31,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         jwtOptions.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
         jwtOptions.Audience = builder.Configuration["Auth0:Audience"];
     });
-
-
 
 //    AddAuth0WebAppAuthentication(options =>
 //{
