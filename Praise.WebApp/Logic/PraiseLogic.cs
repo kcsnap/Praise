@@ -8,13 +8,13 @@ namespace Praise.WebApp.Logic
     {
         public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived()
         {
-            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
+            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
             return sent;
         }
 
         public async Task<IEnumerable<PraiseDetails>> GetPraisesSent()
         {
-            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
+            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
             return received;
         }
 

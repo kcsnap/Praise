@@ -2,14 +2,22 @@
 @inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <p style="color:white">@name</p>
+    <div class="sidebar">        
         <NavMenu />
     </div>
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @if (string.IsNullOrEmpty(name))
+            {
+                <NavLink class="nav-link" href="account/login">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
+                </NavLink>
+            }
+            else
+            {
+                @name
+            }
         </div>
 
         <article class="content px-4">
@@ -38,12 +46,12 @@
             }
             else
             {
-                name = "NOT LOGGED IN";
+                name = string.Empty;
             }
         }
         catch (Exception ex)
         {
-            name = "NOT LOGGED IN";
+            name = string.Empty;
         }
     }
 }

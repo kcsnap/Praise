@@ -1,6 +1,41 @@
 ﻿@page "/praisesreceived"
-<h3>Praises Received</h3>
+@inject IPraiseLogic praiseLogic
+@using Praise.Models
+@using Praise.Models.Generic
+@using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<h1 style="text-align:center">Praises Received</h1>
+
+<table>
+    @if (_PraisesReceived != null)
+    {
+        foreach (var praise in _PraisesReceived)
+        {
+            <tr>
+                <td>
+                    <img src="/images/5957125.png" style="width:80px" />
+                </td>
+                <td>
+                    <span style="display:block;font-size:30px;font-weight:bold;">@praise.Text</span>
+                    <span style="display:block;font-size:80%">@praise.FromEmail, @praise.PraiseDate.ToString("dd MMMM yyyy")</span>
+                    <hr />
+                </td>
+            </tr>
+        }
+    }
+</table>
 
 @code {
+    IEnumerable<PraiseDetails> _PraisesReceived;
 
+    protected override async Task OnInitializedAsync()
+    {
+        StateHasChanged();
+        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
+        // await Task.Delay(2000);
+        _PraisesReceived = await praiseLogic.GetPraisesReceived();
+    }
 }

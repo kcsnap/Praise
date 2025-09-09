@@ -3,57 +3,69 @@
 @inject IPraiseLogic praiseLogic
 @inject IPraiseTypeLogic praiseTypeLogic
 @inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager _navigationManager
 @using BlazorBootstrap
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
 @using Praise.Models;
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
-<h3>Send A Praise</h3>
-@* <button class="btn btn-primary" @onclick="SendPraise">TEST: Click me</button> *@
+
+<div class="line-text">
+    <span>Send a Praise</span>
+</div>
 
 @if (!PraiseSent)
 {
     @if(ShowSummary())
     {
-        <div>
-            <h4>Summary</h4>
-            <ul>
-                <li>Type: @selectedPraiseType.Description</li>
-                @if(InReview)
-                {
-                    <li>To: @RecipientEmail</li>
-                }
-            </ul>
-        </div>
+        <div class="step"><span>Step 1</span> @selectedPraiseType.Description</div>
+        @if(InReview)
+        {
+            <div class="step"><span>Step 2</span> @RecipientEmail</div>
+        }
     }
 
     @if(selectedPraiseType == null)
     {
-        <h5>Select Praise Type</h5>
-        <ul>
+        <div class="step"><span>Step 1</span> Select Praise Type</div>
+        
+        <div class="row">
             @foreach (var praiseType in praiseTypes)
             {
-                <li>
-                    <Button @onclick="() => SelectedPraiseType(praiseType)" Color="@ButtonColor.Primary">@praiseType.Description</Button>
-                </li>
+                <div class="col-xl-3 col-lg-4 col-sm-6 col-12 justify-content-center">
+                    <div class="praise-container">
+                        <img src="/images/5957125.png" class="praise-image img-fluid" />
+                        <span class="praise-text">@praiseType.Description</span>
+                        <Button @onclick="() => SelectedPraiseType(praiseType)" Class="button">Select this Praise</Button>
+                    </div>
+                </div>
             }
-        </ul>
+        </div>
     }
 
     @if (selectedPraiseType != null && !InReview)
     {
-        <TextInput @bind-Value="@RecipientEmail" Placeholder="Enter email address" />
-        <Button Color="ButtonColor.Success" Class="float-end me-2" @onclick="ReviewAndSend">Review & Send</Button>
+        <div class="step"><span>Step 2</span> Enter Recipient's Email Address</div>
+        <div class="input-group input-group-lg">
+            <TextInput @bind-Value="@RecipientEmail" Placeholder="Enter email address" Class="form-control" />
+        </div>
+        <Button Class="float-end mt-1 me-2 button" @onclick="ReviewAndSend">Review & Send</Button>
     }
 
     @if (InReview)
     {
-        <Button Color="ButtonColor.Success" Class="float-end me-2" @onclick="SendPraise">Send It!</Button>    
+        <Button Class="float-end me-2 button" @onclick="SendPraise">Send It!</Button>    
     }
 }
 else
 {
-    <div>Well done! Add amazing fact about dopamine through praise...</div>
+    <div class="alert alert-info">Well done! We've sent your praise to @RecipientEmail</div>
+    <div class="step"><span>Did you know...</span> When you give someone genuine praise, both you and the person receiving it get a little boost of dopamine. It strengthens social bonds, makes the praise-giver feel good for spreading positivity, and motivates the receiver to keep up the good behavior — a win-win brain chemistry loop!</div>
+    <div class="col-sm-12 pt-5" style="text-align:center">
+        <Button Class="me-2 button" @onclick="NewPraise">Give More Praise</Button>
+    </div>
 }
 
 @code {
@@ -111,5 +123,9 @@ else
      *      ii. BadgeChecker
      */
 
-    
+
+    private void NewPraise(MouseEventArgs args)
+    {
+        _navigationManager.Refresh(true);
+    }
 }

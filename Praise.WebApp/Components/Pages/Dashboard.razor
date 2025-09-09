@@ -1,0 +1,111 @@
+﻿@page "/dashboard"
+@attribute [StreamRendering]
+@inject IRecentActivityLogic recentActivityLogic
+@using Praise.Models
+@using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<PageTitle>Home</PageTitle>
+
+@* <a href="https://auth0.com/blog/what-is-blazor-tutorial-on-building-webapp-with-authentication/#Securing-the-Application-with-Auth0">Auth0 Tutorial</a> *@
+
+<div class="line-text">
+    <span>Recent Praises Sent</span>    
+</div>
+
+<div class="row">
+    <div class="col-sm-12 d-flex justify-content-end">
+        <a href="/praisessent" class="small-button">View all</a>
+    </div>
+    @if (RecentActivity != null)
+    {
+        if (RecentActivity.PraisesSent != null)
+        {
+            @foreach (var sent in RecentActivity.PraisesSent)
+            {
+                <div class="col-xl-3 col-lg-4 col-sm-6 col-12 justify-content-center">
+                    <div class="praise-container">
+                        <img src="/images/@sent.ImageUrl" class="praise-image img-fluid" />
+                        <span class="praise-text">@sent.Text</span>
+                        <span class="praise-email">to @sent.ToEmail</span>
+                        <span class="praise-date">@sent.PraiseDate.ToString("dd MMMM yyyy")</span>
+                    </div>
+                </div>
+            }
+            <div class="col-sm-12 pt-5" style="text-align:center">
+                <a class="button" href="/sendapraise">Send a Praise</a> 
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-12">Send your <a href="/sendapraise">First Praise</a> now!</div>
+        }
+    }
+    else
+    {
+        <div class="col-sm-12">
+            Loading Recent Activity...
+        </div>
+    }
+</div>
+
+<div class="line-text pt-5">
+    <span>Recent Praises Received</span>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <a href="/praisesreceived" class="small-button">View all</a>
+    </div>
+        @if (RecentActivity != null)
+        {
+            if (RecentActivity.PraisesReceived != null)
+            {
+                @foreach (var sent in RecentActivity.PraisesReceived)
+                {
+                    <div class="col-xl-3 col-lg-4 col-sm-6 col-12 justify-content-center">
+                        <div class="praise-container">
+                            <img src="/images/@sent.ImageUrl" class="praise-image" />
+                            <span class="praise-text">@sent.Text</span>
+                            <span class="praise-email">from @sent.FromEmail</span>
+                            <span class="praise-date">@sent.PraiseDate.ToString("dd MMMM yyyy")</span>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-sm-12">Send your <a href="/sendapraise">First Praise</a> now and get the ball rolling!!</div>
+            }
+        }
+        else
+        {
+            <div class="col-sm-12">
+                Loading Recent Activity...
+            </div>
+        }
+
+</div>
+
+<div class="line-text">
+    <span>Badges</span>    
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="alert alert-info mb-5">COMING SOON</div>
+    </div>
+</div>
+
+@code {
+    string Name = "";
+    RecentActivity RecentActivity;
+
+    protected override async Task OnInitializedAsync()
+    {
+        StateHasChanged();
+        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
+        // await Task.Delay(2000);
+        RecentActivity = await recentActivityLogic.GetRecentActivityForUser();
+    }
+}

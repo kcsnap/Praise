@@ -4,9 +4,11 @@ using Praise.WebApp.Logic;
 using WebHttpPostAttribute = System.Web.Http;
 using MvcHttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
+using System.Web.Http;
 
 namespace Praise.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PraiseController(IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic)

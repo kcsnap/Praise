@@ -2,7 +2,9 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Praise</a>
+        <NavLink class="navbar-brand" href="dsahboard">
+            <img style="width:35px" src="images/praise-logo.svg" /> Praise
+        </NavLink>
     </div>
 </div>
 
@@ -10,48 +12,49 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-list-nested-nav-menu " aria-hidden="true"></span> Dashboard
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="sendapraise">
-                @* <Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x1" />
-                 *@ <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Send a Praise
-                @*                  <span class="fa-solid fa-hands-clapping" aria-hidden="true"></span> Send a Praise
- *@            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="praisessent">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Praises Sent
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="praisesreceived">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Praises Received
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="badgesearned">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Awards
-            </NavLink>
-        </div>
-
-        <hr />
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="profile">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Profile
-            </NavLink>
-        </div>
 
         @if (LoggedIn)
         {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All">
+                    <span class="bi bi-list-nested-nav-menu " aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="sendapraise">
+                    @* <Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x1" />
+                     *@ <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Send a Praise
+                    @*                  <span class="fa-solid fa-hands-clapping" aria-hidden="true"></span> Send a Praise
+     *@            </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="praisessent">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Praises Sent
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="praisesreceived">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Praises Received
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="badgesearned">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Awards
+                </NavLink>
+            </div>
+
+            <hr />
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="profile">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Profile
+                </NavLink>
+            </div>
+
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="account/logout">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Logout
@@ -60,11 +63,11 @@
         }
         else
         {
-            <div class="nav-item px-3">
+            @* <div class="nav-item px-3">
                 <NavLink class="nav-link" href="account/login">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
                 </NavLink>
-            </div>
+            </div> *@
         }
 
         @* <div class="nav-item px-3">

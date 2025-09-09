@@ -4,23 +4,26 @@
 @using Praise.Models.Generic
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
-<h3>Praises Sent</h3>
+<h1 style="text-align:center">Praises Sent</h1>
 
 <table>
         @if(_PraisesSent != null)
         {
             foreach(var praise in _PraisesSent)
             {
-            <tr>
-                <td>
-                    <span>
-                        @praise.ToEmail:<br />
-                        @praise.Text<br />
-                        @praise.PraiseDate.ToString("dd MMMM yyyy")<br />
-                    </span>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <img src="/images/5957125.png" style="width:80px" />
+                    </td>
+                    <td>
+                        <span style="display:block;font-size:30px;font-weight:bold;">@praise.Text</span>
+                        <span style="display:block;font-size:80%">@praise.ToEmail, @praise.PraiseDate.ToString("dd MMMM yyyy")</span>
+                        <hr />
+                    </td>
+                </tr>
             }
         }
 </table>
