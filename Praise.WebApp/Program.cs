@@ -43,8 +43,11 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 
 builder.Services.AddDistributedMemoryCache();
 
+// configure options 
 builder.Services.Configure<AuthorisationOptions>(
     builder.Configuration.GetSection(AuthorisationOptions.ConfigNode));
+builder.Services.Configure<PraiseApiOptions>(
+    builder.Configuration.GetSection(PraiseApiOptions.ConfigNode));
 
 var app = builder.Build();
 

@@ -14,12 +14,14 @@ namespace Praise.WebApp.Logic
 
         protected readonly IHttpContextAccessor _contextAccessor;
         protected readonly AuthorisationOptions _authOptions;
-
-        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IHttpContextAccessor contextAccessor)
+        
+        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, IHttpContextAccessor contextAccessor)
         {
             // todo - refine Iconfiguration options to required section
             _authOptions = authOptions.Value;
             _contextAccessor = contextAccessor;
+
+            BasePraiseUrl = praiseApiOptions.Value.PraiseUri;
         }
 
         public async Task Initialise()
@@ -47,7 +49,7 @@ namespace Praise.WebApp.Logic
             client.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
         }
 
-        private string BasePraiseUrl = "https://localhost:7222/";
+        private readonly string BasePraiseUrl;
 
         // requires auth
         public static string PraiseTypeUrl = "PraiseType";

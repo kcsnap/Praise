@@ -78,7 +78,7 @@ h1:focus {
 
     .line-text span {
         white-space: nowrap; /* prevent text from wrapping */
-        font-size: 24px; /* adjust font size */
+        font-size: 36px; /* adjust font size */
         font-weight: bold; /* optional */
     }
 
