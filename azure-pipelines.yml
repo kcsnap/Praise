@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 variables:
   buildConfiguration: 'Release'
@@ -37,33 +37,33 @@ steps:
     zipAfterPublish: true
     publishWebProjects: false
 
-- task: AzureCLI@2
-  displayName: 'Enable run-from-package'
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az webapp config appsettings set \
-        --name PraiseWebApp \
-        --resource-group rg-praisewebapp \
-        --settings WEBSITE_RUN_FROM_PACKAGE=1
+# - task: AzureCLI@2
+#   displayName: 'Enable run-from-package'
+#   inputs:
+#     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       az webapp config appsettings set \
+#         --name PraiseWebApp \
+#         --resource-group rg-praisewebapp \
+#         --settings WEBSITE_RUN_FROM_PACKAGE=1
 
-- task: AzureCLI@2
-  displayName: 'Clear wwwroot folder'
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az webapp ssh --name PraiseWebApp --resource-group rg-praisewebapp --command "rm -rf /home/site/wwwroot/*"
+# - task: AzureCLI@2
+#   displayName: 'Clear wwwroot folder'
+#   inputs:
+#     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       az webapp ssh --name PraiseWebApp --resource-group rg-praisewebapp --command "rm -rf /home/site/wwwroot/*"
 
 - task: AzureWebApp@1
   displayName: 'Deploy to Azure WebApp'
   inputs:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    appType: 'webAppLinux'
-    appName: 'PraiseWebApp'
+    appType: 'webApp'
+    appName: 'Praise-WebApp-Test'
     package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
     
 
