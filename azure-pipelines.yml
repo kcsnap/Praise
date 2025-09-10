@@ -34,7 +34,7 @@ steps:
     #azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     command: 'publish'
     projects: '*/Praise.WebApp.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'    
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish/PraiseWebApp.zip'    
     zipAfterPublish: true
     publishWebProjects: false
 
@@ -44,7 +44,7 @@ steps:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     appType: 'webAppLinux'
     appName: 'PraiseWebApp'
-    package: '$(Build.ArtifactStagingDirectory)/publish/*.zip'
+    package: '$(Build.ArtifactStagingDirectory)/publish/PraiseWebApp.zip'
 
 # - task: DotNetCoreCLI@2
 #   inputs:
