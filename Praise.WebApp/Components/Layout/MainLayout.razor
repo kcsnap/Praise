@@ -1,10 +1,11 @@
 ﻿@inject IHttpContextAccessor _contextAccessor
+@inject IConfiguration _configuration
 @inherits LayoutComponentBase
 
 <div class="page">
     @if (!string.IsNullOrEmpty(name))
     {
-        <div class="sidebar">        
+        <div class="sidebar">            
             <NavMenu />
         </div>
     }
@@ -29,6 +30,8 @@
         }
         <article class="content px-4">
             @Body
+            <div id="testvalue">@TestValue</div>
+            <div id="testvalue">@NestedTestValue</div>
         </article>
     </main>
 </div>
@@ -41,11 +44,17 @@
 
 @code {
     private string name = "";
+    private string TestValue = "Unassigned";
+    private string NestedTestValue = "Unassigned";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // todo - remove, for testing pursposes only
+            TestValue = _configuration["TestValue"] ?? "Not Set";
+            NestedTestValue = _configuration["TestObject:NestedTestValue"] ?? "Not Set";
+
             var ctx = _contextAccessor.HttpContext;
             if (ctx.User.Identity.IsAuthenticated)
             {
