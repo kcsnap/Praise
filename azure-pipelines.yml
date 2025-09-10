@@ -43,7 +43,7 @@ steps:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     appType: 'webAppLinux'
     appName: 'PraiseWebApp'
-    package: '$(Build.ArtifactStagingDirectory)/publishwebapp/*.zip'
+    package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
 
 # - task: DotNetCoreCLI@2
 #   inputs:
