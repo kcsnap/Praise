@@ -31,17 +31,17 @@ steps:
     appName: 'PraiseWebApp'
     package: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    command: 'publish'
-    projects: '*/Praise.Api.csproj'
-    zipAfterPublish: true
-    publishWebProjects: false
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+#     command: 'publish'
+#     projects: '*/Praise.Api.csproj'
+#     zipAfterPublish: true
+#     publishWebProjects: false
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    appType: 'webAppLinux'
-    appName: 'PraiseApi'
-    package: '$(System.DefaultWorkingDirectory)/**/*Api*.zip'
+# - task: AzureWebApp@1
+#   inputs:
+#     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+#     appType: 'webAppLinux'
+#     appName: 'PraiseApi'
+#     package: '$(System.DefaultWorkingDirectory)/**/*Api*.zip'
