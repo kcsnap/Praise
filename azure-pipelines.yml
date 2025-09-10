@@ -15,3 +15,10 @@ steps:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     command: 'publish'
     publishWebProjects: true
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+    appType: 'webAppLinux'
+    appName: 'PraiseWebApp'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
