@@ -9,19 +9,32 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  buildConfiguration: 'Release'
+
 steps:
 - task: UseDotNet@2 #This is needed until windows-latest hosted agent will support .net 9
+  displayName: 'Install .Net9 (currently not included in latest)'
   inputs:
     packageType: 'sdk'
     version: '9.0.100'
+    performMultiLevelLookup: true
     installationPath: '$(Agent.ToolsDirectory)/dotnet'
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet build Praise.WebApp $(buildConfiguration)'
+  inputs:
+    command: 'build'
+    projects: '*/Praise.WebApp.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish Praise.WebApp $(buildConfiguration)'
   inputs:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     command: 'publish'
     projects: '*/Praise.WebApp.csproj'
-    zipAfterPublish: true
+    #zipAfterPublish: true
     publishWebProjects: false
 
 - task: AzureWebApp@1
