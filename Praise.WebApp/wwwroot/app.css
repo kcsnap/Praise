@@ -154,3 +154,18 @@ h1:focus {
 .stick-to-left {
     justify-content:space-between !important;
 }
+a.navbar-brand:hover {
+    text-decoration:none !important;
+}
+.navbar-brand > img {
+    vertical-align: sub;
+}
+.navbar-brand > span {
+    font-size: 26pt;
+}
+.navbar-brand.navbar-green > span {
+    color: white;
+}
+.navbar-brand.navbar-green > span {
+    color: #00423A;
+}
