@@ -32,9 +32,9 @@
             // var formData = new FormUrlEncodedContent(new[]
             // {
             //     new KeyValuePair<string, string>("grant_type", "client_credentials"),
-            //     new KeyValuePair<string, string>("client_id", "0XRSfxmNOchXgmGztSDvh0kfMXLMV66R"),
-            //     new KeyValuePair<string, string>("client_secret", "***REMOVED-S21***"),
-            //     new KeyValuePair<string, string>("audience", "https://dev-snapwire01.uk.auth0.com/api/v2/")
+            //     new KeyValuePair<string, string>("client_id", ""),
+            //     new KeyValuePair<string, string>("client_secret", ""),
+            //     new KeyValuePair<string, string>("audience", "")
             // });
 
             // // Send the POST request
@@ -69,7 +69,7 @@
             // For example, using a JavaScript interop call to save it in local storage
             // await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", JsonSerializer.Serialize(userInfo));
             //await ProtectedLocalStore.SetAsync("name", userInfo.Name);
-            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/Dashboard");
         }
     }
 }

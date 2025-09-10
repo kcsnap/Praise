@@ -118,6 +118,10 @@ h1:focus {
     width:80%;
     max-width:300px;
 }
+.praise-image-small {
+    height:60px;
+    width:60px;
+}
 .praise-container {
     vertical-align: auto;
     text-align: center
@@ -146,3 +150,7 @@ h1:focus {
         font-weight: bold;
         color: #107878;
     }
+
+.stick-to-left {
+    justify-content:space-between !important;
+}

@@ -5,13 +5,16 @@
 // DONE auth call based on Auth0 API
 // DONE Add cosmos db and save praise
 // DONE Email notification for sent praise
-// Read praises sent
-// Read praises received
-// Build Badge checker for sent praise
+// DONE Read praises sent
+// DONE Read praises received
+// Transform when publishng
+// All keys in Vault
 // OpenAPI for documentation
+// Build Badge checker for sent praise
 // All security checks for pages and apis
 
 using Auth0.AspNetCore.Authentication;
+using Praise.Models.Configuration;
 using Praise.WebApp.Components;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Interfaces;
@@ -33,28 +36,15 @@ builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
-    options.Domain = builder.Configuration["Auth0:Domain"];
-    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.Domain = builder.Configuration["Authorisation:Domain"];
+    options.ClientId = builder.Configuration["Authorisation:ClientId"];
     options.Scope = "openid profile email";
 });
 
 builder.Services.AddDistributedMemoryCache();
 
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromSeconds(10);
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.IsEssential = true;
-//});
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-//                {
-//                    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
-//                    options.Audience = builder.Configuration["Auth0:Audience"];
-//                }); ;
-
-//builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.Configure<AuthorisationOptions>(
+    builder.Configuration.GetSection(AuthorisationOptions.ConfigNode));
 
 var app = builder.Build();
 

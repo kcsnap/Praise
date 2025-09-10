@@ -16,5 +16,17 @@ namespace Praise.Api.Logic
             }
             return value.ToString();
         }
+
+        public static string GetImageUrl(this Enum value)
+        {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+
+            if (field != null)
+            {
+                ImageUrlAttribute attribute = Attribute.GetCustomAttribute(field, typeof(ImageUrlAttribute)) as ImageUrlAttribute;
+                return attribute == null ? string.Empty : attribute.Url;
+            }
+            return string.Empty;
+        }
     }
 }

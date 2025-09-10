@@ -11,7 +11,6 @@ namespace Praise.WebApp.Logic.Events.EventBindings
     {
         public async Task Bind()
         { 
-            // TODO separate subscribing from publishing
             _praiseLogic.SendPraisePublished += _badgeLogic.OnSendPraiseReceived;
         }
     }

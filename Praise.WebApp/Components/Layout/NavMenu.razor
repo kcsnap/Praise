@@ -1,8 +1,11 @@
 ﻿@inject IHttpContextAccessor _contextAccessor
 
+@if (LoggedIn)
+{
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <NavLink class="navbar-brand" href="dsahboard">
+        <NavLink class="navbar-brand" href="dashboard">
             <img style="width:35px" src="images/praise-logo.svg" /> Praise
         </NavLink>
     </div>
@@ -13,8 +16,6 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
 
-        @if (LoggedIn)
-        {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All">
                     <span class="bi bi-list-nested-nav-menu " aria-hidden="true"></span> Dashboard
@@ -24,8 +25,8 @@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="sendapraise">
                     @* <Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x1" />
-                     *@ <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Send a Praise
-                    @*                  <span class="fa-solid fa-hands-clapping" aria-hidden="true"></span> Send a Praise
+                     *@ <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Send Praise
+                    @*                  <span class="fa-solid fa-hands-clapping" aria-hidden="true"></span> Send Praise
      *@            </NavLink>
             </div>
 
@@ -43,32 +44,24 @@
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="badgesearned">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Awards
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Badges
                 </NavLink>
             </div>
 
             <hr />
 
-            <div class="nav-item px-3">
+            @* <div class="nav-item px-3">
                 <NavLink class="nav-link" href="profile">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Profile
                 </NavLink>
             </div>
-
+ *@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="account/logout">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Logout
                 </NavLink>
             </div>
-        }
-        else
-        {
-            @* <div class="nav-item px-3">
-                <NavLink class="nav-link" href="account/login">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
-                </NavLink>
-            </div> *@
-        }
+        
 
         @* <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
@@ -84,6 +77,16 @@
     </nav>
 </div>
 
+}
+else
+{
+    @* <div class="nav-item px-3">
+                <NavLink class="nav-link" href="account/login">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
+                </NavLink>
+            </div> *@
+}
+
 @code {
     protected bool LoggedIn = false;
 
@@ -94,9 +97,9 @@
             var ctx = _contextAccessor.HttpContext;
             LoggedIn = ctx.User.Identity.IsAuthenticated;
         }
-        catch
+        catch(Exception ex)
         {
-            // todo
+            // todo - log invalid access
         }
     }
 }

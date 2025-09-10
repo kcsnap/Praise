@@ -7,35 +7,38 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<h1 style="text-align:center">Praises Sent</h1>
+<div class="line-text">
+    <span>Praises Sent</span>
+</div>
 
-<table>
+<div class="row">
+    <div class="col-6 offset-3">
+        
         @if(_PraisesSent != null)
         {
             foreach(var praise in _PraisesSent)
             {
-                <tr>
-                    <td>
-                        <img src="/images/5957125.png" style="width:80px" />
-                    </td>
-                    <td>
-                        <span style="display:block;font-size:30px;font-weight:bold;">@praise.Text</span>
+                <div class="row">
+                    <div class="col-3">
+                        <img src="/images/@praise.ImageUrl" style="float:right;width:80px" />
+                    </div>
+                    <div class="col-9">
+                        <span style="display:block;font-size:40px;font-weight:bold;">@praise.Text</span>
                         <span style="display:block;font-size:80%">@praise.ToEmail, @praise.PraiseDate.ToString("dd MMMM yyyy")</span>
                         <hr />
-                    </td>
-                </tr>
+                    </div>
+                </div>
             }
         }
-</table>
-
+        
+    </div>
+</div>
 @code {
     IEnumerable<PraiseDetails> _PraisesSent;
 
     protected override async Task OnInitializedAsync()
     {
         StateHasChanged();
-        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
-        // await Task.Delay(2000);
         _PraisesSent = await praiseLogic.GetPraisesSent();
     }
 }

@@ -35,7 +35,7 @@
                 </div>
             }
             <div class="col-sm-12 pt-5" style="text-align:center">
-                <a class="button" href="/sendapraise">Send a Praise</a> 
+                <a class="button" href="/sendapraise">Send Praise</a> 
             </div>
         }
         else
@@ -104,8 +104,6 @@
     protected override async Task OnInitializedAsync()
     {
         StateHasChanged();
-        // TODO - improve response, Simulate asynchronous loading to demonstrate streaming rendering
-        // await Task.Delay(2000);
         RecentActivity = await recentActivityLogic.GetRecentActivityForUser();
     }
 }

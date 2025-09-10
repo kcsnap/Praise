@@ -21,7 +21,7 @@ namespace Praise.Api.Controllers
                 {
                     Type = praiseTypeEnum,
                     Description = praiseTypeEnum.GetDescription(),
-                    ImageUrl = "TBD"
+                    ImageUrl = praiseTypeEnum.GetImageUrl()
                 });
             }
 

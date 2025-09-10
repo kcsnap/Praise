@@ -1,7 +1,8 @@
-﻿using Praise.Models.Generic;
+﻿using Microsoft.Extensions.Options;
+using Praise.Models.Configuration;
+using Praise.Models.Generic;
 using Praise.WebApp.Logic.Interfaces;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 
 namespace Praise.WebApp.Logic
@@ -9,26 +10,30 @@ namespace Praise.WebApp.Logic
     public class PraiseApi : IPraiseApi
     {
         protected HttpClient client;
-        protected IHttpContextAccessor _contextAccessor;
         protected string bearerToken;
 
-        public PraiseApi(IHttpContextAccessor contextAccessor)
+        protected readonly IHttpContextAccessor _contextAccessor;
+        protected readonly AuthorisationOptions _authOptions;
+
+        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IHttpContextAccessor contextAccessor)
         {
+            // todo - refine Iconfiguration options to required section
+            _authOptions = authOptions.Value;
             _contextAccessor = contextAccessor;
         }
 
         public async Task Initialise()
         {
             // Set the request URL
-            var url = "https://dev-snapwire01.uk.auth0.com/oauth/token";
-
+            var url = _authOptions.AuthTokenUrl;
+            
             // Prepare the form data
             var formData = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_id", "0XRSfxmNOchXgmGztSDvh0kfMXLMV66R"),
-                new KeyValuePair<string, string>("client_secret", "***REMOVED-S21***"),
-                new KeyValuePair<string, string>("audience", "https://dev-snapwire01.uk.auth0.com/api/v2/")
+                new KeyValuePair<string, string>("grant_type", _authOptions.GrantType),
+                new KeyValuePair<string, string>("client_id", _authOptions.ClientId),
+                new KeyValuePair<string, string>("client_secret", _authOptions.ClientSecret),
+                new KeyValuePair<string, string>("audience", _authOptions.Audience)
             });
 
             // Send the POST request

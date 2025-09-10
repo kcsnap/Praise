@@ -31,7 +31,7 @@ namespace Praise.Api.Logic
         {
             // generate email
             var sendSmtpEmail = new SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
-            // todo - pull from config
+            
             sendSmtpEmail.Sender = new SendSmtpEmailSender(emailFrom, emailFrom);
             sendSmtpEmail.To = new List<SendSmtpEmailTo>()
             {
