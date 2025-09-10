@@ -34,7 +34,7 @@ steps:
     #azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     command: 'publish'
     projects: '*/Praise.WebApp.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishwebapp/'    
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishwebapp'
     zipAfterPublish: true
     publishWebProjects: false
 
