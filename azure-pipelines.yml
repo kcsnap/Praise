@@ -49,6 +49,15 @@ steps:
         --resource-group rg-praisewebapp \
         --settings WEBSITE_RUN_FROM_PACKAGE=1
 
+- task: AzureCLI@2
+  displayName: 'Clear wwwroot folder'
+  inputs:
+    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az webapp ssh --name PraiseWebApp --resource-group rg-praisewebapp --command "rm -rf /home/site/wwwroot/*"
+
 - task: AzureWebApp@1
   displayName: 'Deploy to Azure WebApp'
   inputs:
