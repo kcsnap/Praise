@@ -34,7 +34,7 @@ steps:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
     command: 'publish'
     projects: '*/Praise.WebApp.csproj'
-    #zipAfterPublish: true
+    zipAfterPublish: false
     publishWebProjects: false
 
 - task: AzureWebApp@1
