@@ -10,6 +10,12 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: UseDotNet@2 #This is needed until windows-latest hosted agent will support .net 9
+  inputs:
+    packageType: 'sdk'
+    version: '9.0.100'
+    installationPath: '$(Agent.ToolsDirectory)/dotnet'
+
 - task: DotNetCoreCLI@2
   inputs:
     azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
