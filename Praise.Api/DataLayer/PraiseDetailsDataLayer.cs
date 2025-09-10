@@ -1,21 +1,23 @@
 ﻿using Azure.Identity;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 using Praise.Api.DataLayer.Interfaces;
 using Praise.Models;
+using Praise.Models.Configuration;
 using Container = Microsoft.Azure.Cosmos.Container;
 
 namespace Praise.Api.DataLayer
-{
+{    
     public class PraiseDetailsDataLayer : IPraiseDetailsDataLayer
     {
         protected Database database;
         protected Container praiseContainer;
         protected CosmosClient client;
 
-        public PraiseDetailsDataLayer()
+        public PraiseDetailsDataLayer(IOptions<DatabaseOptions> dbOptions)
         {
-            var primaryKey = "***REMOVED-S21***";
-            var connStr = "AccountEndpoint=https://praise-cosmosdb.documents.azure.com:443/;AccountKey=***REMOVED-S21***;";
+            var primaryKey = dbOptions.Value.PrimaryKey;
+            var connStr = dbOptions.Value.ConnectionString;
 
             DefaultAzureCredential credential = new();
 

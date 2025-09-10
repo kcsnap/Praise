@@ -5,6 +5,7 @@ using Praise.Api.DataLayer.Interfaces;
 using Praise.Api.Logic;
 using Praise.Api.Logic.Events;
 using Praise.Api.Logic.Interfaces;
+using Praise.Models.Configuration;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Events;
 using Praise.WebApp.Logic.Events.EventBindings;
@@ -32,15 +33,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         jwtOptions.Audience = builder.Configuration["Auth0:Audience"];
     });
 
-//    AddAuth0WebAppAuthentication(options =>
-//{
-//    options.Domain = builder.Configuration["Auth0:Domain"];
-//    options.ClientId = builder.Configuration["Auth0:ClientId"];
-//    options.Scope = "openid profile email";
-//});
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.Configure<DatabaseOptions>(
+    builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
 
 var app = builder.Build();
 

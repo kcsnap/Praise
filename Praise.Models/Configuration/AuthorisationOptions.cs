@@ -2,7 +2,7 @@
 {
     public class AuthorisationOptions
     {
-        public const string ConfigNode = "Authorisation";
+        public static string ConfigNode => "Authorisation";
 
         public string AuthTokenUrl { get; set; }
         public string GrantType { get; set; }
