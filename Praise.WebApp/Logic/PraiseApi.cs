@@ -127,7 +127,7 @@ namespace Praise.WebApp.Logic
                     return result;
                 }
 
-                throw new NotImplementedException("API Request Error: " + await response.Content.ReadAsStringAsync());
+                throw new NotImplementedException("API Request Error calling [" + path + "] and payload object [" + payloadObject + "]: " + await response.Content.ReadAsStringAsync());
             }
             catch (HttpRequestException e)
             {
