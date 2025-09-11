@@ -2,8 +2,9 @@
 @rendermode InteractiveServer
 @inject IPraiseLogic praiseLogic
 @inject IPraiseTypeLogic praiseTypeLogic
-@inject IHttpContextAccessor httpContextAccessor
+@inject IHttpContextAccessor _httpContextAccessor
 @inject NavigationManager _navigationManager
+@inject ILogger<SendAPraise> _logger
 @using BlazorBootstrap
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
@@ -77,13 +78,24 @@ else
 
     protected async Task SendPraise()
     {
-        // send the praise to the recipient and confirmation to user
-        await praiseLogic.SendPraise(
-            httpContextAccessor.HttpContext.User.Identity.Name,
-            RecipientEmail,
-            selectedPraiseType
-        );
-        PraiseSent = true;
+        try
+        {
+            // send the praise to the recipient and confirmation to user
+            await praiseLogic.SendPraise(
+                _httpContextAccessor.HttpContext.User.Identity.Name,
+                RecipientEmail,
+                selectedPraiseType
+            );
+            PraiseSent = true;
+        }
+        catch(Exception ex)
+        {
+            var msg = "SendAPraise.SendPraise: [see inner exception]"; 
+            _logger.LogError(ex, msg);
+
+            // todo - how to visualise this to the user
+            throw new Exception(msg, ex);
+        }
     }
 
     protected async Task ReviewAndSend()

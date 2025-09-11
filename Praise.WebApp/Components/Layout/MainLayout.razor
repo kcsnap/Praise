@@ -1,4 +1,4 @@
-﻿@inject IHttpContextAccessor _contextAccessor
+﻿@inject IHttpContextAccessor _httpContextAccessor
 @inject IConfiguration _configuration
 @inherits LayoutComponentBase
 
@@ -56,7 +56,7 @@
             TestValue = _configuration["TestValue"] ?? "Not Set";
             NestedTestValue = _configuration["TestObject:NestedTestValue"] ?? "Not Set";
 
-            var ctx = _contextAccessor.HttpContext;
+            var ctx = _httpContextAccessor.HttpContext;
             if (ctx.User.Identity.IsAuthenticated)
             {
                 name = ctx.User.Identity.Name;
