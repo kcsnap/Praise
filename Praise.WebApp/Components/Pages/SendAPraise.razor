@@ -72,10 +72,17 @@ else
 @code {
     private IList<PraiseTypeMetadata> praiseTypes = new List<PraiseTypeMetadata>();
     private PraiseTypeMetadata selectedPraiseType = null;
+    private string currentUser = string.Empty;
     private string RecipientEmail = null;
     private bool InReview = false;
     private bool PraiseSent = false;
-    
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = _httpContextAccessor.HttpContext.User.Identity.Name;
+        praiseTypes = await praiseTypeLogic.GetPraiseTypes();
+    }
+
     protected async Task SendPraise()
     {
         try
@@ -102,6 +109,7 @@ else
 
             // send the praise to the recipient and confirmation to user
             await praiseLogic.SendPraise(
+                currentUser,
                 RecipientEmail,
                 selectedPraiseType
             );
@@ -133,27 +141,6 @@ else
         // add to summary, hide rest and move to next section
         selectedPraiseType = praiseType;
     }
-
-    //private async Task SendPraise()
-    protected override async Task OnInitializedAsync()
-    {
-        praiseTypes = await praiseTypeLogic.GetPraiseTypes();
-    }
-    /*
-     * When sending a praise the following events must occur:
-     * > capture:
-     *      person's email(in future FB / Insta / Company contact)
-     *      type of praise
-     *      selected image
-     * > send an email with a link to the website with details of praise
-     * > check if badge is earned as a result of the action
-     * Design:
-     *  trigger event of type 'praiseGiven'
-     *  2 subscribers:
-     *      i. PraiseNotifier (email initially, other forms later)
-     *      ii. BadgeChecker
-     */
-
 
     private void NewPraise(MouseEventArgs args)
     {

@@ -18,12 +18,11 @@ namespace Praise.WebApp.Logic
             return received;
         }
 
-        public async Task<PraiseDetails> SendPraise(string toEmail, PraiseTypeMetadata praiseTypeMetadata)
+        public async Task<PraiseDetails> SendPraise(string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
         {
-            string fromEmail = string.Empty;
             try
-            {
-                fromEmail = _httpAccessor.HttpContext.User.Identity.Name;
+            {                
+                _logger.LogInformation("Post praise from " + fromEmail + " to " + toEmail);
                 return await praiseApi.PostAsync(PraiseApi.PraiseUrl, new PraiseDetails
                 {
                     Text = praiseTypeMetadata.Description,

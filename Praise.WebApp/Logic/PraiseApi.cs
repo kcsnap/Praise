@@ -47,9 +47,11 @@ namespace Praise.WebApp.Logic
             var content = Task.Run(response.Content.ReadAsStringAsync).Result;
             bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
+            _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
             client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             client.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
+            _logger.LogInformation("Instantiated HttpClient username header with " + _contextAccessor.HttpContext.User.Identity.Name);
         }
 
         private readonly string BasePraiseUrl;
