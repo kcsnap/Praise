@@ -21,7 +21,7 @@
     </div>
     @if (RecentActivity != null)
     {
-        if (RecentActivity.PraisesSent != null)
+        if (RecentActivity.PraisesSent != null && RecentActivity.PraisesSent.Count() > 0)
         {
             @foreach (var sent in RecentActivity.PraisesSent)
             {
@@ -60,7 +60,7 @@
     </div>
         @if (RecentActivity != null)
         {
-            if (RecentActivity.PraisesReceived != null)
+            if (RecentActivity.PraisesReceived != null && RecentActivity.PraisesReceived.Count() > 0)
             {
                 @foreach (var sent in RecentActivity.PraisesReceived)
                 {

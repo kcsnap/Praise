@@ -79,7 +79,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        currentUser = _httpContextAccessor.HttpContext.User.Identity.Name;
+        var ctx = _httpContextAccessor.HttpContext;
+        if (ctx.User.Identity.IsAuthenticated)
+        {
+            currentUser = ctx.User.Identity.Name;
+        }
+        else
+        {
+            throw new Exception("Unable to identify user from HttpContext");   
+        }
+
         praiseTypes = await praiseTypeLogic.GetPraiseTypes();
     }
 
