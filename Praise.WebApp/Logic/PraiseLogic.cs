@@ -4,7 +4,7 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseLogic(IPraiseApi praiseApi, ILogger<PraiseLogic> _logger) : IPraiseLogic
+    public class PraiseLogic(IHttpContextAccessor _httpAccessor, ILogger<PraiseLogic> _logger, IPraiseApi praiseApi) : IPraiseLogic
     {
         public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived()
         {
@@ -18,10 +18,12 @@ namespace Praise.WebApp.Logic
             return received;
         }
 
-        public async Task<PraiseDetails> SendPraise(string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
+        public async Task<PraiseDetails> SendPraise(string toEmail, PraiseTypeMetadata praiseTypeMetadata)
         {
+            string fromEmail = string.Empty;
             try
             {
+                fromEmail = _httpAccessor.HttpContext.User.Identity.Name;
                 return await praiseApi.PostAsync(PraiseApi.PraiseUrl, new PraiseDetails
                 {
                     Text = praiseTypeMetadata.Description,

@@ -75,20 +75,11 @@ else
     private string RecipientEmail = null;
     private bool InReview = false;
     private bool PraiseSent = false;
-
+    
     protected async Task SendPraise()
     {
         try
         {
-            try
-            {
-                var name = _httpContextAccessor.HttpContext.User.Identity.Name;
-            }
-            catch
-            {
-                _logger.LogError("TO REMOVE - _httpContextAccessor.HttpContext.User.Identity.Name is NULL");
-
-            }
             try
             {
                 var email = RecipientEmail;
@@ -111,7 +102,6 @@ else
 
             // send the praise to the recipient and confirmation to user
             await praiseLogic.SendPraise(
-                _httpContextAccessor.HttpContext.User.Identity.Name,
                 RecipientEmail,
                 selectedPraiseType
             );
