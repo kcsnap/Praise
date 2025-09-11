@@ -4,7 +4,7 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseLogic(IPraiseApi praiseApi) : IPraiseLogic
+    public class PraiseLogic(IPraiseApi praiseApi, ILogger<PraiseLogic> _logger) : IPraiseLogic
     {
         public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived()
         {
@@ -20,15 +20,24 @@ namespace Praise.WebApp.Logic
 
         public async Task<PraiseDetails> SendPraise(string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
         {
-            return await praiseApi.PostAsync(PraiseApi.PraiseUrl, new PraiseDetails
+            try
             {
-                Text = praiseTypeMetadata.Description,
-                ImageUrl = praiseTypeMetadata.ImageUrl,
-                PraiseDate = DateTime.UtcNow,
-                ToEmail = toEmail,
-                FromEmail = fromEmail,
-                PraiseType = praiseTypeMetadata.Type
-            });
+                return await praiseApi.PostAsync(PraiseApi.PraiseUrl, new PraiseDetails
+                {
+                    Text = praiseTypeMetadata.Description,
+                    ImageUrl = praiseTypeMetadata.ImageUrl,
+                    PraiseDate = DateTime.UtcNow,
+                    ToEmail = toEmail,
+                    FromEmail = fromEmail,
+                    PraiseType = praiseTypeMetadata.Type
+                });
+            }
+            catch (Exception ex)
+            {
+                var msg = "Error praising " + toEmail + " from " + fromEmail;
+                _logger.LogError(msg, ex);
+                throw new Exception(msg, ex);
+            }
         }
     }
 }

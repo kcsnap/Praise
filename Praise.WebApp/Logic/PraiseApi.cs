@@ -14,12 +14,15 @@ namespace Praise.WebApp.Logic
 
         protected readonly IHttpContextAccessor _contextAccessor;
         protected readonly AuthorisationOptions _authOptions;
-        
-        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, IHttpContextAccessor contextAccessor)
+        protected readonly ILogger<PraiseApi> _logger;
+
+
+        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, IHttpContextAccessor contextAccessor, ILogger<PraiseApi> logger)
         {
             // todo - refine Iconfiguration options to required section
             _authOptions = authOptions.Value;
             _contextAccessor = contextAccessor;
+            _logger = logger;
 
             BasePraiseUrl = praiseApiOptions.Value.PraiseUri;
         }
@@ -105,7 +108,16 @@ namespace Praise.WebApp.Logic
         }
         public async Task<T> CallApi<T>(HttpMethods httpMethod, string url, T? payloadObject)
         {
-            if (client == null) Initialise();
+            try 
+            { 
+                if (client == null) Initialise();
+            }
+            catch (Exception ex)
+            {
+                var msg = "PraiseApi.CallApi() => Error initialising client";
+                _logger.LogError(msg, ex);
+                throw new Exception(msg, ex);
+            }
 
             HttpResponseMessage response;
             var path = BasePraiseUrl + url;
@@ -127,7 +139,9 @@ namespace Praise.WebApp.Logic
                     return result;
                 }
 
-                throw new NotImplementedException("API Request Error calling [" + path + "] and payload object [" + payloadObject + "]: " + await response.Content.ReadAsStringAsync());
+                var msg = "API Request Error calling [" + path + "] and payload object [" + payloadObject + "]: " + await response.Content.ReadAsStringAsync();
+                _logger.LogError(msg);
+                throw new Exception(msg);
             }
             catch (HttpRequestException e)
             {
@@ -139,10 +153,11 @@ namespace Praise.WebApp.Logic
                 //Console.WriteLine($"JSON Deserialization Exception: {e.Message}");
                 throw new NotImplementedException(e.Message, e);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                //Console.WriteLine($"JSON Deserialization Exception: {e.Message}");
-                throw new NotImplementedException(e.Message, e);
+                var msg = "PraiseApi.CallApi() => [See inner exception]";
+                _logger.LogError(msg, ex);
+                throw new Exception(msg, ex);
             }
         }
     }

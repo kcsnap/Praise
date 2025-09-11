@@ -5,13 +5,14 @@ using WebHttpPostAttribute = System.Web.Http;
 using MvcHttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 using System.Web.Http;
+using Microsoft.VisualBasic;
 
 namespace Praise.Api.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class PraiseController(IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic)
+    public class PraiseController(ILogger<PraiseController> _logger, IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic)
     {
         /// <summary>
         /// /praise?type=sent | received
@@ -36,14 +37,23 @@ namespace Praise.Api.Controllers
         [MvcHttpPost(Name = "PostPraise")]
         public async Task<PraiseDetails> Post(PraiseDetails praiseSent)
         {
-            var email = _contextAccessor.HttpContext.Request.Headers["username"];
-            
-            if (string.IsNullOrEmpty(email))
-                throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
+            try
+            {
+                var email = _contextAccessor.HttpContext.Request.Headers["username"];
 
-            praiseLogic.PublishSendPraiseEvent(praiseSent);
+                if (string.IsNullOrEmpty(email))
+                    throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
 
-            return praiseSent;
+                praiseLogic.PublishSendPraiseEvent(praiseSent);
+
+                return praiseSent;
+            }
+            catch (Exception ex)
+            {
+                var msg = "PostPraise() Error: [See inner exception]";
+                _logger.LogError(msg, ex);
+                throw new Exception(msg, ex);
+            }
         }
     }
 }
