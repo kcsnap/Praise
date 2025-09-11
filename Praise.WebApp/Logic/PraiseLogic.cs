@@ -1,4 +1,5 @@
-﻿using Praise.Models;
+﻿using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
+using Praise.Models;
 using Praise.Models.Generic;
 using Praise.WebApp.Logic.Interfaces;
 
@@ -18,10 +19,17 @@ namespace Praise.WebApp.Logic
             return received;
         }
 
-        public async Task<PraiseDetails> SendPraise(IPraiseUser praiseUser, string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
+        public async Task<PraiseDetails> SendPraise(IPraiseUser praiseUser, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
         {
+            string fromEmail = string.Empty;
+
             try
-            {                
+            {
+                fromEmail = await praiseUser.GetCurrentUserAsync();
+
+                if (string.IsNullOrEmpty(fromEmail))
+                    throw new Exception("PraiseLogic.SendPraise Current user cannot be null");
+
                 _logger.LogInformation("Post praise from " + fromEmail + " to " + toEmail);
                 return await praiseApi.PostAsync(praiseUser, PraiseApi.PraiseUrl, new PraiseDetails
                 {
