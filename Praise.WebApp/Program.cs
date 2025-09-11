@@ -18,6 +18,7 @@ using Praise.Models.Configuration;
 using Praise.WebApp.Components;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Interfaces;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,10 @@ builder.Services.Configure<AuthorisationOptions>(
     builder.Configuration.GetSection(AuthorisationOptions.ConfigNode));
 builder.Services.Configure<PraiseApiOptions>(
     builder.Configuration.GetSection(PraiseApiOptions.ConfigNode));
+
+// Add the Azure Monitor telemetry service to the application.
+// This service will collect and send telemetry data to Azure Monitor.
+builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
 var app = builder.Build();
 

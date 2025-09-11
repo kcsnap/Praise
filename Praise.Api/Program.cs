@@ -1,4 +1,5 @@
 using Auth0.AspNetCore.Authentication;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Praise.Api.DataLayer;
 using Praise.Api.DataLayer.Interfaces;
@@ -38,6 +39,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.Configure<DatabaseOptions>(
     builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
+
+// Add the Azure Monitor telemetry service to the application.
+// This service will collect and send telemetry data to Azure Monitor.
+builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
 var app = builder.Build();
 

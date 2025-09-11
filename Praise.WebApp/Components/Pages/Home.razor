@@ -1,9 +1,13 @@
 ﻿@page "/"
+@inject ILogger<Home> logger
 
 <PageTitle>Home</PageTitle>
 
 <span>Public marketing page v0.09</span>
 
 @code {
-    
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogInformation("TEST LOGGING Loading Homepage");
+    }
 }

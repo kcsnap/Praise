@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 using Praise.Api.DataLayer;
 using Praise.Api.Logic;
 using Praise.Models;
+using Praise.Models.Configuration;
 using Praise.WebApp.Logic;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,8 @@ namespace Praise.Tests.Logic.DataLayer
         [TestMethod]
         public async Task WHENSave_THENCanReadBack()
         {
-            PraiseDetailsDataLayer_ForTesting praiseDB = new PraiseDetailsDataLayer_ForTesting();
+            var options = Options.Create(new DatabaseOptions());
+            PraiseDetailsDataLayer_ForTesting praiseDB = new PraiseDetailsDataLayer_ForTesting(options);
             
             var praiseDTO = new PraiseDetails
             {
@@ -41,7 +44,8 @@ namespace Praise.Tests.Logic.DataLayer
         [TestMethod]
         public async Task WHENSaveMultiple_THENCanReadAllBack()
         {
-            PraiseDetailsDataLayer_ForTesting praiseDB = new PraiseDetailsDataLayer_ForTesting();
+            var options = Options.Create(new DatabaseOptions());
+            PraiseDetailsDataLayer_ForTesting praiseDB = new PraiseDetailsDataLayer_ForTesting(options);
 
             var praise1 = Guid.NewGuid();
             var praise2 = Guid.NewGuid();
@@ -82,6 +86,10 @@ namespace Praise.Tests.Logic.DataLayer
 
     public class PraiseDetailsDataLayer_ForTesting : PraiseDetailsDataLayer
     {
+        public PraiseDetailsDataLayer_ForTesting(IOptions<DatabaseOptions> dbOptions) : base(dbOptions)
+        {
+        }
+
         public async Task<PraiseDetails> Delete(Guid id)
         {
             try
