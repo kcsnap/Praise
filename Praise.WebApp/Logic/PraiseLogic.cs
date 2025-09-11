@@ -6,24 +6,24 @@ namespace Praise.WebApp.Logic
 {
     public class PraiseLogic(IHttpContextAccessor _httpAccessor, ILogger<PraiseLogic> _logger, IPraiseApi praiseApi) : IPraiseLogic
     {
-        public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived()
+        public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived(IPraiseUser praiseUser)
         {
-            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
+            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
             return sent;
         }
 
-        public async Task<IEnumerable<PraiseDetails>> GetPraisesSent()
+        public async Task<IEnumerable<PraiseDetails>> GetPraisesSent(IPraiseUser praiseUser)
         {
-            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
+            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
             return received;
         }
 
-        public async Task<PraiseDetails> SendPraise(string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
+        public async Task<PraiseDetails> SendPraise(IPraiseUser praiseUser, string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata)
         {
             try
             {                
                 _logger.LogInformation("Post praise from " + fromEmail + " to " + toEmail);
-                return await praiseApi.PostAsync(PraiseApi.PraiseUrl, new PraiseDetails
+                return await praiseApi.PostAsync(praiseUser, PraiseApi.PraiseUrl, new PraiseDetails
                 {
                     Text = praiseTypeMetadata.Description,
                     ImageUrl = praiseTypeMetadata.ImageUrl,

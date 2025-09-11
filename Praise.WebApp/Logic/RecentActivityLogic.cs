@@ -6,11 +6,11 @@ namespace Praise.WebApp.Logic
 {
     public class RecentActivityLogic(IHttpContextAccessor contextAccessor, IPraiseApi praiseApi) : IRecentActivityLogic
     {
-        public async Task<RecentActivity> GetRecentActivityForUser()
+        public async Task<RecentActivity> GetRecentActivityForUser(IPraiseUser praiseUser)
         {
             // request recent activities for praises sent, received (and eventually badges)
-            var sentTask = RetrieveRecentPraisesSent();
-            var receivedTask = RetrieveRecentPraisesReceived();
+            var sentTask = RetrieveRecentPraisesSent(praiseUser);
+            var receivedTask = RetrieveRecentPraisesReceived(praiseUser);
 
             await Task.WhenAll(
                 sentTask,
@@ -26,15 +26,15 @@ namespace Praise.WebApp.Logic
             return recentActivity;
         }
 
-        private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesSent()
+        private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesSent(IPraiseUser praiseUser)
         {
-            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage=3 }, "issender=true");
+            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage=3 }, "issender=true");
             return sent;
         }
 
-        private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesReceived()
+        private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesReceived(IPraiseUser praiseUser)
         {
-            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 3 }, "issender=false");
+            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 3 }, "issender=false");
             return received;
         }
     }

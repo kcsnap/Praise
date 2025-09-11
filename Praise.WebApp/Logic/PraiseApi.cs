@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using Praise.Models.Configuration;
 using Praise.Models.Generic;
 using Praise.WebApp.Logic.Interfaces;
@@ -11,24 +12,23 @@ namespace Praise.WebApp.Logic
     {
         protected HttpClient client;
         protected string bearerToken;
-
-        protected readonly IHttpContextAccessor _contextAccessor;
         protected readonly AuthorisationOptions _authOptions;
         protected readonly ILogger<PraiseApi> _logger;
+        protected readonly IPraiseUser _praiseUser;
 
-
-        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, IHttpContextAccessor contextAccessor, ILogger<PraiseApi> logger)
+        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, ILogger<PraiseApi> logger)
         {
             // todo - refine Iconfiguration options to required section
             _authOptions = authOptions.Value;
-            _contextAccessor = contextAccessor;
             _logger = logger;
 
             BasePraiseUrl = praiseApiOptions.Value.PraiseUri;
         }
 
-        public async Task Initialise()
-        {
+        public async Task Initialise(IPraiseUser _praiseUser)
+        {            
+            var fromEmail = await _praiseUser.GetCurrentUserAsync();
+
             // Set the request URL
             var url = _authOptions.AuthTokenUrl;
             
@@ -50,8 +50,8 @@ namespace Praise.WebApp.Logic
             _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
             client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-            client.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
-            _logger.LogInformation("Instantiated HttpClient username header with " + _contextAccessor.HttpContext.User.Identity.Name);
+            client.DefaultRequestHeaders.Add("username", fromEmail);
+            _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
         }
 
         private readonly string BasePraiseUrl;
@@ -63,22 +63,22 @@ namespace Praise.WebApp.Logic
         public static string RecentActivityUrl = "RecentActivity";
         public static string PraiseUrl = "Praise";
 
-        public async Task<T> GetAsync<T>(string url)
+        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url)
         {
-            return await GetAsync<T>(url, null, string.Empty);
+            return await GetAsync<T>(praiseUser, url, null, string.Empty);
         }
 
-        public async Task<T> GetAsync<T>(string url, string querystringParams = "")
+        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, string querystringParams = "")
         {
-            return await GetAsync<T>(url, null, querystringParams);
+            return await GetAsync<T>(praiseUser, url, null, querystringParams);
         }
 
-        public async Task<T> GetAsync<T>(string url, Paging paging)
+        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging paging)
         {
-            return await GetAsync<T>(url, paging, string.Empty);
+            return await GetAsync<T>(praiseUser, url, paging, string.Empty);
         }
 
-        public async Task<T> GetAsync<T>(string url, Paging? paging, string querystringParams)
+        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging? paging, string querystringParams)
         {
             // handle querystring...
             if (!string.IsNullOrEmpty(querystringParams) && paging != null)
@@ -90,12 +90,12 @@ namespace Praise.WebApp.Logic
                 url += "?pagenumber=" + paging.PageNumber + "&numberperpage=" + paging.NumberPerPage;
             // else = add nothing...
 
-            return await CallApi<T>(HttpMethods.GET, url);
+            return await CallApi<T>(praiseUser, HttpMethods.GET, url);
         }
 
-        public async Task<T> PostAsync<T>(string url, T payload)
+        public async Task<T> PostAsync<T>(IPraiseUser praiseUser, string url, T payload)
         {
-            return await CallApi<T>(HttpMethods.POST, url, payload);
+            return await CallApi<T>(praiseUser, HttpMethods.POST, url, payload);
         }
 
         public enum HttpMethods
@@ -104,15 +104,15 @@ namespace Praise.WebApp.Logic
             POST
         }
 
-        public async Task<T> CallApi<T>(HttpMethods httpMethod, string url)
+        public async Task<T> CallApi<T>(IPraiseUser praiseUser, HttpMethods httpMethod, string url)
         {
-            return await CallApi(httpMethod, url, default(T?));
+            return await CallApi(praiseUser, httpMethod, url, default(T?));
         }
-        public async Task<T> CallApi<T>(HttpMethods httpMethod, string url, T? payloadObject)
+        public async Task<T> CallApi<T>(IPraiseUser praiseUser, HttpMethods httpMethod, string url, T? payloadObject)
         {
             try 
-            { 
-                if (client == null) Initialise();
+            {                
+                if (client == null) Initialise(praiseUser);
             }
             catch (Exception ex)
             {

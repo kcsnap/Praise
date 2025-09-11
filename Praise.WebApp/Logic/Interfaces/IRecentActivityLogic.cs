@@ -4,6 +4,6 @@ namespace Praise.WebApp.Logic.Interfaces
 {
     public interface IRecentActivityLogic
     {
-        Task<RecentActivity> GetRecentActivityForUser();
+        Task<RecentActivity> GetRecentActivityForUser(IPraiseUser praiseUser);
     }
 }

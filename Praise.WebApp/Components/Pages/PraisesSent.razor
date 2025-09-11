@@ -1,5 +1,6 @@
 ﻿@page "/praisessent"
 @inject IPraiseLogic praiseLogic
+@inject IPraiseUser praiseUser
 @using Praise.Models
 @using Praise.Models.Generic
 @using Praise.WebApp.Logic
@@ -39,6 +40,6 @@
     protected override async Task OnInitializedAsync()
     {
         StateHasChanged();
-        _PraisesSent = await praiseLogic.GetPraisesSent();
+        _PraisesSent = await praiseLogic.GetPraisesSent(praiseUser);
     }
 }

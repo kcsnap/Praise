@@ -4,9 +4,9 @@ namespace Praise.WebApp.Logic.Interfaces
 {
     public interface IPraiseLogic
     {
-        Task<IEnumerable<PraiseDetails>> GetPraisesSent();
-        Task<IEnumerable<PraiseDetails>> GetPraisesReceived();
+        Task<IEnumerable<PraiseDetails>> GetPraisesSent(IPraiseUser praiseUser);
+        Task<IEnumerable<PraiseDetails>> GetPraisesReceived(IPraiseUser praiseUser);
 
-        Task<PraiseDetails> SendPraise(string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata);
+        Task<PraiseDetails> SendPraise(IPraiseUser praiseUser, string fromEmail, string toEmail, PraiseTypeMetadata praiseTypeMetadata);
     }
 }

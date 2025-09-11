@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 @attribute [StreamRendering]
 @inject IRecentActivityLogic recentActivityLogic
+@inject IPraiseUser praiseUser
 @using Praise.Models
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
@@ -104,6 +105,6 @@
     protected override async Task OnInitializedAsync()
     {
         StateHasChanged();
-        RecentActivity = await recentActivityLogic.GetRecentActivityForUser();
+        RecentActivity = await recentActivityLogic.GetRecentActivityForUser(praiseUser);
     }
 }

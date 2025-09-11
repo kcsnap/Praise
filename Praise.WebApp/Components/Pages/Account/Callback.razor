@@ -5,6 +5,7 @@
 @inject IHttpContextAccessor _contextAccessor
 @inject NavigationManager NavigationManager
 @inject IPraiseApi PraiseApi
+@inject IPraiseUser praiseUser
 
 <h3>Failed Login</h3>
 <p>Please try again</p>
@@ -16,7 +17,7 @@
         var ctx = _contextAccessor.HttpContext;
         if (ctx.User.Identity.IsAuthenticated)
         {
-            await PraiseApi.Initialise();
+            await PraiseApi.Initialise(praiseUser);
 
             // // var client = new RestClient("https://dev-snapwire01.uk.auth0.com/oauth/token");
             // // var request = new RestRequest(Method.POST);

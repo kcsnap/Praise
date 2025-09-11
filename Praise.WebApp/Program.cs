@@ -14,11 +14,12 @@
 // All security checks for pages and apis
 
 using Auth0.AspNetCore.Authentication;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Microsoft.AspNetCore.Components.Authorization;
 using Praise.Models.Configuration;
 using Praise.WebApp.Components;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Interfaces;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPraiseUser, PraiseUser>();
 builder.Services.AddSingleton<IPraiseApi, PraiseApi>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();

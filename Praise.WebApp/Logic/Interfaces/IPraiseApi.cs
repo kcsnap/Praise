@@ -4,11 +4,11 @@ namespace Praise.WebApp.Logic.Interfaces
 {
     public interface IPraiseApi
     {
-        Task Initialise();
-        Task<T> GetAsync<T>(string url);
-        Task<T> GetAsync<T>(string url, Paging paging);
-        Task<T> GetAsync<T>(string url, string querystringParams);
-        Task<T> GetAsync<T>(string url, Paging paging, string querystringParams);
-        Task<T> PostAsync<T>(string url, T payload);
+        Task Initialise(IPraiseUser praiseUser);
+        Task<T> GetAsync<T>(IPraiseUser praiseUser, string url);
+        Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging paging);
+        Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, string querystringParams);
+        Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging paging, string querystringParams);
+        Task<T> PostAsync<T>(IPraiseUser praiseUser, string url, T payload);
     }
 }

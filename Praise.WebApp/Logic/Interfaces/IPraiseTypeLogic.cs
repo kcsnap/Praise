@@ -4,6 +4,6 @@ namespace Praise.WebApp.Logic.Interfaces
 {
     public interface IPraiseTypeLogic
     {
-        Task<IList<PraiseTypeMetadata>> GetPraiseTypes();
+        Task<IList<PraiseTypeMetadata>> GetPraiseTypes(IPraiseUser praiseUser);
     }
 }

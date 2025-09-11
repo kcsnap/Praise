@@ -1,10 +1,13 @@
 ﻿@page "/sendapraise"
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider Auth
 @inject IPraiseLogic praiseLogic
 @inject IPraiseTypeLogic praiseTypeLogic
+@inject IPraiseUser praiseUser
 @inject IHttpContextAccessor _httpContextAccessor
 @inject NavigationManager _navigationManager
 @inject ILogger<SendAPraise> _logger
+@using Microsoft.AspNetCore.Components.Authorization
 @using BlazorBootstrap
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
@@ -79,17 +82,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var ctx = _httpContextAccessor.HttpContext;
-        if (ctx.User.Identity.IsAuthenticated)
-        {
-            currentUser = ctx.User.Identity.Name;
-        }
-        else
-        {
-            throw new Exception("Unable to identify user from HttpContext");   
-        }
+        // var user = (await Auth.GetAuthenticationStateAsync()).User;
 
-        praiseTypes = await praiseTypeLogic.GetPraiseTypes();
+        // if (user.Identity?.IsAuthenticated == true)
+        //     currentUser = user.Identity?.Name;
+        // _logger.LogInformation("SendAPraise.OnInitializedAsync() currentUser = " + currentUser);
+
+
+        // var ctx = _httpContextAccessor.HttpContext;       
+        // if (ctx.User.Identity.IsAuthenticated)
+        // {
+        //     currentUser = ctx.User.Identity.Name;
+        // }
+        // else
+        // {
+        //     throw new Exception("Unable to identify user from HttpContext");   
+        // }
+
+        praiseTypes = await praiseTypeLogic.GetPraiseTypes(praiseUser);
     }
 
     protected async Task SendPraise()
@@ -118,6 +128,7 @@ else
 
             // send the praise to the recipient and confirmation to user
             await praiseLogic.SendPraise(
+                praiseUser,
                 currentUser,
                 RecipientEmail,
                 selectedPraiseType
