@@ -80,6 +80,35 @@ else
     {
         try
         {
+            try
+            {
+                var name = _httpContextAccessor.HttpContext.User.Identity.Name;
+            }
+            catch
+            {
+                _logger.LogError("TO REMOVE - _httpContextAccessor.HttpContext.User.Identity.Name is NULL");
+
+            }
+            try
+            {
+                var email = RecipientEmail;
+            }
+            catch
+            {
+                _logger.LogError("TO REMOVE - RecipientEmail is NULL");
+
+            }
+            try
+            {
+                var name = selectedPraiseType;
+            }
+            catch
+            {
+                _logger.LogError("TO REMOVE - selectedPraiseType is NULL");
+
+            }
+
+
             // send the praise to the recipient and confirmation to user
             await praiseLogic.SendPraise(
                 _httpContextAccessor.HttpContext.User.Identity.Name,
