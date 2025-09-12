@@ -22,18 +22,24 @@
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
                 </NavLink>
             </div>
+            <article class="content px-4 article-home">
+                @Body
+                <div id="testvalue">@TestValue</div>
+                <div id="testvalue">@NestedTestValue</div>
+            </article>
         }
         else
         {            
-            <div class="top-row px-4">
+            <div class="top-row px-4" style="padding-right:30pt !important;">
                 @name            
             </div>
+            <article class="content px-4">
+                @Body
+                <div id="testvalue">@TestValue</div>
+                <div id="testvalue">@NestedTestValue</div>
+            </article>
         }
-        <article class="content px-4">
-            @Body
-            <div id="testvalue">@TestValue</div>
-            <div id="testvalue">@NestedTestValue</div>
-        </article>
+        
     </main>
 </div>
 

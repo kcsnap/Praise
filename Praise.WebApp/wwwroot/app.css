@@ -108,7 +108,7 @@ h1:focus {
     border: 4px solid #781010;
 }
     .button:hover {
-        background-color: white;
+        background-color: transparent;
         color: #781010;
         border: 4px solid #781010;
     }
@@ -168,4 +168,28 @@ a.navbar-brand:hover {
 }
 .navbar-brand.navbar-green > span {
     color: #00423A;
+}
+.hero-container {
+    background-color: #107878;
+    margin:auto;
+}
+.hero-container-inner {
+    width: 1170px;
+    display: block;
+    margin: auto;
+}
+    .hero-container a {
+        position:relative;
+        top:-120px;
+        left:20px;
+    }
+.nav-link {
+    color: #781010;
+    text-decoration: none;
+    float: right;
+    position: relative;
+    right: 20pt;
+    font-size: 1.1rem;
+    outline: none;
+    border: none;
 }

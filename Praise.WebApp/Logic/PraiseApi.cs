@@ -14,7 +14,7 @@ namespace Praise.WebApp.Logic
         protected string bearerToken;
         protected readonly AuthorisationOptions _authOptions;
         protected readonly ILogger<PraiseApi> _logger;
-        protected readonly IPraiseUser _praiseUser;
+        protected readonly IPraiseUserLogic _praiseUser;
 
         public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, ILogger<PraiseApi> logger)
         {
@@ -25,9 +25,9 @@ namespace Praise.WebApp.Logic
             BasePraiseUrl = praiseApiOptions.Value.PraiseUri;
         }
 
-        public async Task Initialise(IPraiseUser _praiseUser)
+        public async Task Initialise(IPraiseUserLogic _praiseUserLogic)
         {            
-            var fromEmail = await _praiseUser.GetCurrentUserAsync();
+            var fromEmail = _praiseUserLogic.PraiseUser.Email;
 
             // Set the request URL
             var url = _authOptions.AuthTokenUrl;
@@ -63,22 +63,22 @@ namespace Praise.WebApp.Logic
         public static string RecentActivityUrl = "RecentActivity";
         public static string PraiseUrl = "Praise";
 
-        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url)
+        public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url)
         {
             return await GetAsync<T>(praiseUser, url, null, string.Empty);
         }
 
-        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, string querystringParams = "")
+        public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url, string querystringParams = "")
         {
             return await GetAsync<T>(praiseUser, url, null, querystringParams);
         }
 
-        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging paging)
+        public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url, Paging paging)
         {
             return await GetAsync<T>(praiseUser, url, paging, string.Empty);
         }
 
-        public async Task<T> GetAsync<T>(IPraiseUser praiseUser, string url, Paging? paging, string querystringParams)
+        public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url, Paging? paging, string querystringParams)
         {
             // handle querystring...
             if (!string.IsNullOrEmpty(querystringParams) && paging != null)
@@ -93,7 +93,7 @@ namespace Praise.WebApp.Logic
             return await CallApi<T>(praiseUser, HttpMethods.GET, url);
         }
 
-        public async Task<T> PostAsync<T>(IPraiseUser praiseUser, string url, T payload)
+        public async Task<T> PostAsync<T>(IPraiseUserLogic praiseUser, string url, T payload)
         {
             return await CallApi<T>(praiseUser, HttpMethods.POST, url, payload);
         }
@@ -104,11 +104,11 @@ namespace Praise.WebApp.Logic
             POST
         }
 
-        public async Task<T> CallApi<T>(IPraiseUser praiseUser, HttpMethods httpMethod, string url)
+        public async Task<T> CallApi<T>(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url)
         {
             return await CallApi(praiseUser, httpMethod, url, default(T?));
         }
-        public async Task<T> CallApi<T>(IPraiseUser praiseUser, HttpMethods httpMethod, string url, T? payloadObject)
+        public async Task<T> CallApi<T>(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url, T? payloadObject)
         {
             try 
             {                

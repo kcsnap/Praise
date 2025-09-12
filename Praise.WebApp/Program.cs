@@ -28,7 +28,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPraiseUser, PraiseUser>();
+builder.Services.AddScoped<IPraiseUserLogic, PraiseUserLogic>();
 builder.Services.AddSingleton<IPraiseApi, PraiseApi>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
