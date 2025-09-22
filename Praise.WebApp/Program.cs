@@ -15,9 +15,11 @@
 
 using Auth0.AspNetCore.Authentication;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Microsoft.AspNetCore.Components.Authorization;
+using GraphQL;
+using GraphQL.Types;
 using Praise.Models.Configuration;
 using Praise.WebApp.Components;
+using Praise.WebApp.GraphQL;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Interfaces;
 
@@ -56,6 +58,16 @@ builder.Services.Configure<PraiseApiOptions>(
 // This service will collect and send telemetry data to Azure Monitor.
 builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
+// add graphql
+builder.Services.AddSingleton<IEmployeeService, EmployeeService>();
+builder.Services.AddSingleton<EmployeeDetailsType>();
+builder.Services.AddSingleton<EmployeeQuery>();
+builder.Services.AddSingleton<ISchema, EmployeeDetailsSchema>();
+builder.Services.AddGraphQL(b => b
+    .AddAutoSchema<EmployeeQuery>()  // schema
+    .AddSystemTextJson());   // serializer
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,6 +90,16 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
    .AddInteractiveServerRenderMode();
+
+// graphql
+app.UseGraphQL<ISchema>("/graphql");            // url to host GraphQL endpoint
+app.UseGraphQLPlayground(
+    "/",                               // url to host Playground at
+    new GraphQL.Server.Ui.Playground.PlaygroundOptions
+    {
+        GraphQLEndPoint = "/graphql",         // url of GraphQL endpoint
+        SubscriptionsEndPoint = "/graphql",   // url of GraphQL endpoint
+    });
 
 app.Run();
 

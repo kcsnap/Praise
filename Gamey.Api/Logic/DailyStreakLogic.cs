@@ -1,5 +1,6 @@
 ﻿namespace Gamey.Logic
 {
+    // TODO - ASSUME WE CAN DELETE THIS !
     public class DailyStreakLogic
     {
         public async Task<DailyStreakRewardNamesEnum> IsStreakReward(int streakNumber)

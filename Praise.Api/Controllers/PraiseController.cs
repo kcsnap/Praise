@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Praise.Models;
 using Praise.WebApp.Logic;
-using WebHttpPostAttribute = System.Web.Http;
-using MvcHttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
-using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
-using System.Web.Http;
-using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Praise.Api.Controllers
 {
@@ -18,8 +14,8 @@ namespace Praise.Api.Controllers
         /// /praise?type=sent | received
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="HttpResponseException"></exception>
-        [WebHttpPostAttribute.HttpGet()]
+        /// <exception cref="HttpResponseException"></exception>        
+        [HttpGet]
         public async Task<IEnumerable<PraiseDetails>> Get([FromQuery(Name = "issender")] bool isSender, [FromQuery(Name = "pagenumber")] int? pageNumber, [FromQuery(Name = "numberperpage")] int? numberPerPage)
         {
             IEnumerable<PraiseDetails> praises;
@@ -27,14 +23,14 @@ namespace Praise.Api.Controllers
             var email = _contextAccessor.HttpContext.Request.Headers["username"];
 
             if (string.IsNullOrEmpty(email))
-                throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
+                throw new BadHttpRequestException("Email is mandatory");
 
             praises = await praiseLogic.GetPraiseDetails(email, isSender, pageNumber, numberPerPage);
 
             return praises;
         }
 
-        [MvcHttpPost(Name = "PostPraise")]
+        [HttpPost(Name = "PostPraise")]
         public async Task<PraiseDetails> Post(PraiseDetails praiseSent)
         {
             try
@@ -42,7 +38,7 @@ namespace Praise.Api.Controllers
                 var email = _contextAccessor.HttpContext.Request.Headers["username"];
 
                 if (string.IsNullOrEmpty(email))
-                    throw new WebHttpPostAttribute.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
+                    throw new BadHttpRequestException("Email is mandatory");
 
                 praiseLogic.PublishSendPraiseEvent(praiseSent);
 

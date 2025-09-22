@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Gamey.Api.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamey.Api.Controllers
 {
+    [ApiController]
+    [Authorize]
+    [Route("[controller]")]
     public class BadgesController : Controller
     {
         /// <summary>
@@ -10,27 +14,10 @@ namespace Gamey.Api.Controllers
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        [HttpGet]
-        [Authorize]
-        public async Task<IEnumerable<EarnedBadge>> Get(Gamer gamer)
+        [HttpGet("{gamerId}")]
+        public async Task<ResponseEarnedBadges> Get(string gamerId)
         {
-            // requires both id and email to return 
-
             throw new NotImplementedException();
         }
-    }
-
-    public class Badge
-    {
-        public int Id { get; set; }
-        public string BadgeTitle { get; set; }
-        public string BadgeDescription { get; set; }
-        public string BadgeUrl { get; set; }
-    }
-
-    public class EarnedBadge : Badge
-    {
-        public bool IsBadgeEarned { get; set; }
-        public DateTime BadgeEarnedDate { get; set; }
     }
 }
