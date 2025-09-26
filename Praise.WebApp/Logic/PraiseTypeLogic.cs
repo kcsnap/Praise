@@ -7,7 +7,7 @@ namespace Praise.WebApp.Logic
     {
         public async Task<IList<PraiseTypeMetadata>> GetPraiseTypes(IPraiseUserLogic praiseUser)
         {
-            return await praiseApi.GetAsync<IList<PraiseTypeMetadata>>(praiseUser, PraiseApi.PraiseTypeUrl);
+            return await praiseApi.GetAsync<IList<PraiseTypeMetadata>>(praiseUser, PraiseApiWrapper.PraiseTypeUrl);
         }
     }
 }

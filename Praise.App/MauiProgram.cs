@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Praise.App.PageModels;
+using Praise.App.Pages;
 using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace Praise.App;

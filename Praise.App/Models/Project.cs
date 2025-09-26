@@ -1,3 +1,4 @@
+using Praise.App.Models;
 using System.Text.Json.Serialization;
 
 namespace Praise.App.Models;

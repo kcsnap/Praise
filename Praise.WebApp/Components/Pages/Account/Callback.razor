@@ -5,7 +5,7 @@
 @inject IHttpContextAccessor _contextAccessor
 @inject NavigationManager NavigationManager
 @inject IPraiseApi PraiseApi
-@inject IPraiseUserLogic praiseUser
+@inject IPraiseUserLogic praiseUserLogic
 @inject ILogger<Callback> _logger
 
 <h3>Failed Login</h3>
@@ -24,7 +24,12 @@
             if (ctx.User.Identity.IsAuthenticated)
             {
                 _logger.LogInformation("Callback.OnInitializedAsync() user is authentication");
-                await PraiseApi.Initialise(praiseUser);
+                await PraiseApi.Initialise(praiseUserLogic);
+
+
+
+                
+
 
                 // // var client = new RestClient("https://dev-snapwire01.uk.auth0.com/oauth/token");
                 // // var request = new RestRequest(Method.POST);
@@ -77,7 +82,7 @@
                 // For example, using a JavaScript interop call to save it in local storage
                 // await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", JsonSerializer.Serialize(userInfo));
                 //await ProtectedLocalStore.SetAsync("name", userInfo.Name);
-            }
+    }
         }
         catch(Exception ex)
         {

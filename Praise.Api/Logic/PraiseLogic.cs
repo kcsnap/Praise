@@ -1,5 +1,4 @@
-﻿using Praise.Api.DataLayer;
-using Praise.Api.DataLayer.Interfaces;
+﻿using Praise.Api.DataLayer.Interfaces;
 using Praise.Models;
 
 namespace Praise.WebApp.Logic

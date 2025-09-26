@@ -31,7 +31,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPraiseUserLogic, PraiseUserLogic>();
-builder.Services.AddSingleton<IPraiseApi, PraiseApi>();
+builder.Services.AddSingleton<IPraiseApi, PraiseApiWrapper>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseTypeLogic, PraiseTypeLogic>();
@@ -63,9 +63,10 @@ builder.Services.AddSingleton<IEmployeeService, EmployeeService>();
 builder.Services.AddSingleton<EmployeeDetailsType>();
 builder.Services.AddSingleton<EmployeeQuery>();
 builder.Services.AddSingleton<ISchema, EmployeeDetailsSchema>();
-builder.Services.AddGraphQL(b => b
-    .AddAutoSchema<EmployeeQuery>()  // schema
-    .AddSystemTextJson());   // serializer
+
+//builder.Services.AddGraphQL(b => b
+//    .AddAutoSchema<EmployeeQuery>()  // schema
+//    .AddSystemTextJson());   // serializer
 
 
 var app = builder.Build();
@@ -91,15 +92,15 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
    .AddInteractiveServerRenderMode();
 
-// graphql
-app.UseGraphQL<ISchema>("/graphql");            // url to host GraphQL endpoint
-app.UseGraphQLPlayground(
-    "/",                               // url to host Playground at
-    new GraphQL.Server.Ui.Playground.PlaygroundOptions
-    {
-        GraphQLEndPoint = "/graphql",         // url of GraphQL endpoint
-        SubscriptionsEndPoint = "/graphql",   // url of GraphQL endpoint
-    });
+//// graphql
+//app.UseGraphQL<ISchema>("/graphql");            // url to host GraphQL endpoint
+//app.UseGraphQLPlayground(
+//    "/",                               // url to host Playground at
+//    new GraphQL.Server.Ui.Playground.PlaygroundOptions
+//    {
+//        GraphQLEndPoint = "/graphql",         // url of GraphQL endpoint
+//        SubscriptionsEndPoint = "/graphql",   // url of GraphQL endpoint
+//    });
 
 app.Run();
 

@@ -9,13 +9,13 @@ namespace Praise.WebApp.Logic
     {
         public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived(IPraiseUserLogic praiseUser)
         {
-            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
+            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApiWrapper.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=false");
             return sent;
         }
 
         public async Task<IEnumerable<PraiseDetails>> GetPraisesSent(IPraiseUserLogic praiseUser)
         {
-            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
+            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApiWrapper.PraiseUrl, new Paging() { NumberPerPage = 10 }, "issender=true");
             return received;
         }
 
@@ -31,7 +31,7 @@ namespace Praise.WebApp.Logic
                     throw new Exception("PraiseLogic.SendPraise Current user cannot be null");
 
                 _logger.LogInformation("Post praise from " + fromEmail + " to " + toEmail);
-                return await praiseApi.PostAsync(_praiseUserLogic, PraiseApi.PraiseUrl, new PraiseDetails
+                return await praiseApi.PostAsync(_praiseUserLogic, PraiseApiWrapper.PraiseUrl, new PraiseDetails
                 {
                     Text = praiseTypeMetadata.Description,
                     ImageUrl = praiseTypeMetadata.ImageUrl,

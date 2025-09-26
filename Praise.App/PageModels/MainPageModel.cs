@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Praise.App;
 using Praise.App.Models;
 
 namespace Praise.App.PageModels;

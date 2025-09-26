@@ -2,13 +2,19 @@
 // rate limit, throttling
 // 
 
+using Gamey.Api.Configuration;
+using Gamey.Api.DataLayer;
+using Gamey.Api.DataLayer.Interfaces;
 using Gamey.Api.Handlers;
 using Gamey.Api.Interfaces;
 using Gamey.Api.Logic;
+using Gamey.Api.Logic.Achievements;
+using Gamey.Api.Logic.Badges;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Swagger config
 // add swagger docs
 builder.Services.AddSwaggerGen(options =>
 {
@@ -19,6 +25,14 @@ builder.Services.AddSwaggerGen(options =>
         Name = "X-API-KEY",
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Description = "Enter your API key here"
+    });
+    options.AddSecurityDefinition("ClientId", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Name = "X-CLIENT-ID",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Description = "Enter your Client Id here"
     });
 
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -36,18 +50,46 @@ builder.Services.AddSwaggerGen(options =>
                 }
             },
             new string[] { }
+        },
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Name = "X-CLIENT-ID",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                //Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "ClientId"
+                }
+            },
+            new string[] { }
         }
     });
 });
+#endregion
 
 // Add authentication
 builder.Services.AddAuthentication("ApiKeyScheme")
     .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKeyScheme", null);
 
 // DI
-builder.Services.AddScoped<IGameEventsLogic, GameEventsLogic>();
-builder.Services.AddScoped<IBadgeLogic, BadgeLogic>();
-builder.Services.AddScoped<IGamerLogic, GamerLogic>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IGameEventsLogic, GameEventsLogic>();
+builder.Services.AddSingleton<IBadgeLogic, BadgeLogic>();
+builder.Services.AddSingleton<IGamerLogic, GamerLogic>();
+builder.Services.AddSingleton<IGameLogic, GameLogic>();
+builder.Services.AddSingleton<IAchievementsLogic, AchievementsLogic>();
+builder.Services.AddSingleton<ISpecialBadgeGroupLogic, SpecialBadgeGroupAchievementLogic>();
+builder.Services.AddSingleton<IAchievementsFactory, AchievementsFactory>();
+
+// Data layer DI
+builder.Services.AddSingleton<IGameDataLayer, GameDataLayer>();
+builder.Services.AddSingleton<IGameEventDataLayer, GameEventDataLayer>();
+builder.Services.AddSingleton<IGameyDbConnection, GameyDbConnection>();
+
+builder.Services.Configure<DatabaseOptions>(
+    builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

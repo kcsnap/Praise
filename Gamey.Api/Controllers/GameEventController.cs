@@ -1,4 +1,5 @@
 ﻿using Gamey.Api.Interfaces;
+using Gamey.Api.Logic;
 using Gamey.Api.Models;
 using Gamey.Api.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -7,18 +8,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gamey.Api.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("[controller]")]
-    public class GameEventController(IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic) : Controller
+    [Authorize]    
+    public class GameEventController(IHttpContextAccessor _contextAccessor, IGameLogic _gameLogic, IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic) : Controller
     {
+        [HttpGet("gameevent")]
+        public async Task<IEnumerable<GameEvent>> Get()
+        {
+            // we don't need user here, we just need clientid from authenticated client
+            var clientId = _contextAccessor.HttpContext.Request.Headers["X-CLIENT-ID"];
+            var game = await _gameLogic.GetGame(clientId);
+
+            if (game == null) throw new Exception("Error retrieving game for client id : " + clientId);
+
+            var events = await gameEventsLogic.GetGameEvents(game.id.Value);
+            return events;
+        }
+
         /// <summary>
         /// Indiciate the user has triggered a new event and return NEW (only!) badges awarded as a result
         /// </summary>
         /// <param name="newGameEvent"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        [HttpPost]
-        public async Task<ResponseBadge> Post(NewGameEvent newGameEvent)
+        [HttpPost("gameevent")]        
+        public async Task<ResponseBadges> Post(NewGameEvent newGameEvent)
         {
             if(newGameEvent == null || string.IsNullOrEmpty(newGameEvent.EventCode))
                 throw new BadHttpRequestException("EventCode is mandatory");
@@ -31,11 +44,11 @@ namespace Gamey.Api.Controllers
 
             // check for new badges...
             // TODO RETURN NEW BADGES, IF ANY!!!
-            await badgeLogic.CheckBadges("123", gameEvent);
+            var badges = await badgeLogic.GetBadgesEarnedForEvent(newGameEvent.GamerId, gameEvent);
 
-            return new ResponseBadge
+            return new ResponseBadges
             {
-                Badges = new List<BadgeGroupDetails>()
+                EarnedBadges = badges
             };
         }
     }

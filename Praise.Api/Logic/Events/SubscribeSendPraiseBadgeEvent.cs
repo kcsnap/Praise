@@ -1,6 +1,5 @@
 ﻿using Praise.Api.Logic.Interfaces;
 using Praise.WebApp.Logic;
-using System.Xml.Linq;
 
 namespace Praise.Api.Logic.Events
 {

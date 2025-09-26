@@ -1,31 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Gamey.Api.Interfaces;
+using Gamey.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamey.Api.Controllers
 {
     [Authorize]
-    [ApiController]
-    [Route("[controller]")]
-    public class GamersController : Controller
+    [ApiController]    
+    public class GamersController(IGamerLogic _gamerLogic) : Controller
     {
         /// <summary>
         /// add a new gamer to the authenticated users account and return the GamerID
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<Gamer> Post(NewGamer newGamer)
+        [HttpPost("gamers")]        
+        public async Task<Gamer> Post(Gamer gamer)
         {
-            throw new NotImplementedException();
+            return await _gamerLogic.AddGamer(gamer);
         }
 
         /// <summary>
         /// update an existing gamer to the authenticated users account and return the Gamer details
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("{gamerId}")]
-        public async Task<Gamer> Patch(string gamerId, NewGamer newGamer)
+        [HttpPatch("gamers/{gamerEmail}")]
+        public async Task<Gamer> Patch(string gamerEmail, Gamer gamer)
         {
-            throw new NotImplementedException();
+            return await _gamerLogic.UpdateGamer(gamerEmail, gamer);
         }
                 
         //[HttpGet]        
@@ -49,37 +50,10 @@ namespace Gamey.Api.Controllers
         //    };
         //}
 
-        [HttpGet("{gamerId}")]
-        public async Task<ResponseGamer> Get(string gamerId)
+        [HttpGet("gamers/{gamerEmail}")]
+        public async Task<Gamer> Get(string gamerEmail)
         {
-            return new ResponseGamer
-            {
-                Gamer = new Gamer
-                {
-                    EmailAddress = "test@test.com",
-                    Id = gamerId
-                }
-            };
+            return await _gamerLogic.GetGamerByEmail(gamerEmail);
         }
     }
-
-    public class NewGamer
-    {
-        public string EmailAddress { get; set; }
-    }
-
-    public class Gamer : NewGamer
-    {
-        public string Id { get; set; }
-    }
-
-    public class ResponseGamer
-    {
-        public Gamer Gamer { get; set; }
-    }
-    public class ResponseGamers
-    {
-        public IEnumerable<Gamer> Gamers { get; set; }
-    }
-
 }

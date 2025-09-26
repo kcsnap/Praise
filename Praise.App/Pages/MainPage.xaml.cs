@@ -1,7 +1,4 @@
-﻿using Praise.App.Models;
-using Praise.App.PageModels;
-
-namespace Praise.App.Pages;
+﻿namespace Praise.App.Pages;
 
 public partial class MainPage : ContentPage
 {

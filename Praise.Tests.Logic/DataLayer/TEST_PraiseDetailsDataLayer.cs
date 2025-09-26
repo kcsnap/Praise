@@ -2,6 +2,7 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Praise.Api.Configuration;
 using Praise.Api.DataLayer;
 using Praise.Api.Logic;
 using Praise.Models;

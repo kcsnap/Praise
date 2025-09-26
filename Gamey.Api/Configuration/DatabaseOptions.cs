@@ -1,4 +1,4 @@
-﻿namespace Praise.Models.Configuration
+﻿namespace Gamey.Api.Configuration
 {
     public class DatabaseOptions
     {

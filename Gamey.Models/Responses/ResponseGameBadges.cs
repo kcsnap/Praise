@@ -1,6 +1,6 @@
 ﻿namespace Gamey.Api.Models.Responses
 {
-    public class ResponseBadge
+    public class ResponseGameBadges
     {
         public IEnumerable<BadgeGroupDetails> Badges { get; set; }
     }

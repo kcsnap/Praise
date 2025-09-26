@@ -2,13 +2,14 @@
 using Praise.Models;
 using Praise.WebApp.Logic;
 using Microsoft.AspNetCore.Authorization;
+using Praise.Api.Logic.Interfaces;
 
 namespace Praise.Api.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class PraiseController(ILogger<PraiseController> _logger, IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic)
+    public class PraiseController(ILogger<PraiseController> _logger, IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic, IGameLogic gameLogic, IPraiseUserLogic _praiseUserLogic)
     {
         /// <summary>
         /// /praise?type=sent | received
@@ -20,12 +21,10 @@ namespace Praise.Api.Controllers
         {
             IEnumerable<PraiseDetails> praises;
 
-            var email = _contextAccessor.HttpContext.Request.Headers["username"];
-
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(_praiseUserLogic.PraiseUser.Email))
                 throw new BadHttpRequestException("Email is mandatory");
 
-            praises = await praiseLogic.GetPraiseDetails(email, isSender, pageNumber, numberPerPage);
+            praises = await praiseLogic.GetPraiseDetails(_praiseUserLogic.PraiseUser.Email, isSender, pageNumber, numberPerPage);
 
             return praises;
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Praise.Tests.Engine
+namespace Gamey.Tests.Engine
 {
     public class Tests_Badges
     {

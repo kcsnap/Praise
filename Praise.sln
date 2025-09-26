@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Praise.Models", "Praise.Mod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto_Tests.CryptoManager", "Tests\Crypto_Tests.CryptoManager\Crypto_Tests.CryptoManager.csproj", "{8FF8FFD5-B821-41B4-A281-4EFE681FFC9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gamey.Models", "Gamey.Models\Gamey.Models.csproj", "{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{8FF8FFD5-B821-41B4-A281-4EFE681FFC9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FF8FFD5-B821-41B4-A281-4EFE681FFC9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FF8FFD5-B821-41B4-A281-4EFE681FFC9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

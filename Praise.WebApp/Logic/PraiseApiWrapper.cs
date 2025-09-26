@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Praise.Models.Configuration;
 using Praise.Models.Generic;
 using Praise.WebApp.Logic.Interfaces;
@@ -8,15 +7,15 @@ using System.Text.Json;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseApi : IPraiseApi
+    public class PraiseApiWrapper : IPraiseApi
     {
         protected HttpClient client;
         protected string bearerToken;
         protected readonly AuthorisationOptions _authOptions;
-        protected readonly ILogger<PraiseApi> _logger;
+        protected readonly ILogger<PraiseApiWrapper> _logger;
         protected readonly IPraiseUserLogic _praiseUser;
 
-        public PraiseApi(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, ILogger<PraiseApi> logger)
+        public PraiseApiWrapper(IOptions<AuthorisationOptions> authOptions, IOptions<PraiseApiOptions> praiseApiOptions, ILogger<PraiseApiWrapper> logger)
         {
             // todo - refine Iconfiguration options to required section
             _authOptions = authOptions.Value;
@@ -52,6 +51,11 @@ namespace Praise.WebApp.Logic
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             client.DefaultRequestHeaders.Add("username", fromEmail);
             _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
+
+            // TODO > Check against login count - this is quick and dirty solution...
+            // if no praises assume first login and raise event with gamification engine
+            _logger.LogInformation("Check first login detected for user " + _praiseUserLogic.PraiseUser.Email);
+            await PostAsync(_praiseUserLogic, GameUrl);
         }
 
         private readonly string BasePraiseUrl;
@@ -60,6 +64,7 @@ namespace Praise.WebApp.Logic
         public static string PraiseTypeUrl = "PraiseType";
 
         // requires auth and specific user
+        public static string GameUrl = "Game";
         public static string RecentActivityUrl = "RecentActivity";
         public static string PraiseUrl = "Praise";
 
@@ -93,6 +98,10 @@ namespace Praise.WebApp.Logic
             return await CallApi<T>(praiseUser, HttpMethods.GET, url);
         }
 
+        public async Task PostAsync(IPraiseUserLogic praiseUser, string url)
+        {
+            await CallApi<object>(praiseUser, HttpMethods.POST, url, null);
+        }
         public async Task<T> PostAsync<T>(IPraiseUserLogic praiseUser, string url, T payload)
         {
             return await CallApi<T>(praiseUser, HttpMethods.POST, url, payload);

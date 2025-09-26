@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Runtime;
-
 namespace Praise.App;
 
 [Application]

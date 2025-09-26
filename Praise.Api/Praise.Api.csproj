@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Gamey.Models\Gamey.Models.csproj" />
     <ProjectReference Include="..\Praise.Models\Praise.Models.csproj" />
   </ItemGroup>
 

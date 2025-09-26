@@ -1,9 +1,9 @@
 ﻿using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
+using Praise.Api.Configuration;
 using Praise.Api.DataLayer.Interfaces;
 using Praise.Models;
-using Praise.Models.Configuration;
 using Container = Microsoft.Azure.Cosmos.Container;
 
 namespace Praise.Api.DataLayer

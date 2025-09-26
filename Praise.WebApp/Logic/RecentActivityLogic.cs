@@ -28,13 +28,13 @@ namespace Praise.WebApp.Logic
 
         private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesSent(IPraiseUserLogic praiseUser)
         {
-            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage=3 }, "issender=true");
+            var sent = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApiWrapper.PraiseUrl, new Paging() { NumberPerPage=3 }, "issender=true");
             return sent;
         }
 
         private async Task<IEnumerable<PraiseDetails>> RetrieveRecentPraisesReceived(IPraiseUserLogic praiseUser)
         {
-            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApi.PraiseUrl, new Paging() { NumberPerPage = 3 }, "issender=false");
+            var received = await praiseApi.GetAsync<IEnumerable<PraiseDetails>>(praiseUser, PraiseApiWrapper.PraiseUrl, new Paging() { NumberPerPage = 3 }, "issender=false");
             return received;
         }
     }

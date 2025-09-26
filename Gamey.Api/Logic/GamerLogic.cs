@@ -19,26 +19,46 @@ namespace Gamey.Api.Logic
             {
                 new Gamer
                 {
-                    Id = "unique-gamer-1",
-                    GamerName = "display-name-1"
+                    Id = "unique-gamer-1", 
+                    GamerName = "randomly-assigned-username-1",
+                    GamerEmail = "kenneth.cox@snapwire.co.uk",
+                    GameId = "praise-game"
                 },
                 new Gamer
                 {
                     Id = "unique-gamer-2",
-                    GamerName = "display-name-2"
+                    GamerName = "randomly-assigned-username-2",
+                    GamerEmail = "gavin@snapwire.co.uk",
+                    GameId = "praise-game"
                 },
                 new Gamer
                 {
                     Id = "unique-gamer-3",
-                    GamerName = "display-name-3"
+                    GamerName = "randomly-assigned-username-3",
+                    GamerEmail = "sarah@snapwire.co.uk",
+                    GameId = "praise-game"
                 }
             };
         }
 
-        public async Task<Gamer> GetGamerByUniqueName(string gamerName)
+        public async Task<Gamer> GetGamerById(string gamerName)
         {
             return Gamers.FirstOrDefault(e => e.GamerName == gamerName);
         }
 
+        public async Task<Gamer> GetGamerByEmail(string gamerEmail)
+        {
+            return Gamers.FirstOrDefault(e => e.GamerEmail == gamerEmail);
+        }
+
+        public async Task<Gamer> UpdateGamer(string gamerEmail, Gamer gamer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Gamer> AddGamer(Gamer gamer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
