@@ -2,11 +2,15 @@
 @attribute [StreamRendering]
 @inject IRecentActivityLogic recentActivityLogic
 @inject IPraiseUserLogic praiseUser
+@inject IBadgeLogic _badgeLogic
+@using BlazorBootstrap
 @using Praise.Models
+@using Praise.WebApp.Components.Modals
 @using Praise.WebApp.Logic
 @using Praise.WebApp.Logic.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -89,24 +93,91 @@
         }    
 </div>
 
-
-
 <div class="line-text">
     <span>Badges</span>    
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <div class="alert alert-info mb-5">COMING SOON</div>
+        @if (BadgeGroups != null)
+        {
+            if (BadgeGroups.Count() > 0)
+            {
+                @foreach (var badgeGroup in BadgeGroups)
+                {
+                    <div class="col-12">
+                        <div class="badge-group-container">
+                            <h2 class="badge-group-title">@badgeGroup.BadgeTitle</h2>                            
+
+                            <div class="row">
+                                @foreach(var badge in badgeGroup.BadgeDetails)
+                                {
+                                    <div class="col-xl-3 col-lg-4 col-sm-6 col-12 justify-content-center">
+                                        <img src="/images/@badge.BadgeImageUrl" class="praise-image" />
+                                        <span class="badge-subtitle">@badge.BadgeSubtitle</span>
+
+                                        @if(badge.BadgeDateEarned != null)
+                                        {
+                                            <span class="badge-date">Earned @badge.BadgeDateEarned?.ToString("dd MMMM yyyy")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-date">Not yet earned</span>
+                                        }
+                                        @if(badge.BadgeDateClaimed != null)
+                                        {
+                                            <span class="badge-date">Claimed @badge.BadgeDateClaimed?.ToString("dd MMMM yyyy")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="praise-date">Not yet claimed</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-sm-12">
+                    <div class="alert alert-danger">WARNING - GAME AND/OR BADGES NOT REGISTRED CORRECTLY</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-sm-12">
+                Loading Recent Activity...
+            </div>
+        }
     </div>
 </div>
+
+<Modal @ref="modal" />
 
 @code {
     string Name = "";
     RecentActivity RecentActivity;
+    private Modal modal = default!;
+    private IEnumerable<BadgeGroupViewModel> BadgeGroups;
 
     protected override async Task OnInitializedAsync()
     {
-        StateHasChanged();
+        //StateHasChanged();
         RecentActivity = await recentActivityLogic.GetRecentActivityForUser(praiseUser);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // at this point retrieve all achievements and display those unclaimed...
+            BadgeGroups = await _badgeLogic.GetBadges(praiseUser);
+            StateHasChanged();
+            // var parameters = new Dictionary<string, object>();
+            // parameters.Add("BadgeTitle", "Welcome Newbie");
+            // await modal.ShowAsync<BadgeAwardComponent>(title: "You've earned a new Badge", parameters: parameters);
+        }
     }
 }

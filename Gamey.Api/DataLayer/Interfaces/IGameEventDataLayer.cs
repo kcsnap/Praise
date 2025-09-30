@@ -5,6 +5,7 @@ namespace Gamey.Api.DataLayer.Interfaces
     public interface IGameEventDataLayer
     {
         Task<IEnumerable<GameEvent>> Read(Guid gameId);
+        Task<GameEvent> ReadByEventCode(Guid gameId, string gameEventCode);
 
     }
 }

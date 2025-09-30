@@ -18,7 +18,7 @@ namespace Praise.Api.Logic.Events
                           "from " + e.PraiseDetails.FromEmail;
 
             // extract to and type from payload 
-            Task.Run(async() => emailManagerLogic.SendEmail(e.PraiseDetails.ToEmail, subject, body));
+            Task.Run(async() => await emailManagerLogic.SendEmail(e.PraiseDetails.ToEmail, subject, body));
         }
     }
 }

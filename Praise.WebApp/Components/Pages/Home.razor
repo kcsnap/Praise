@@ -1,5 +1,8 @@
 ﻿@page "/"
+@using BlazorBootstrap
+@using Praise.WebApp.Components.Modals
 @inject ILogger<Home> logger
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -12,15 +15,3 @@
 <br />
 
 <span>Public marketing page v0.10</span>
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        logger.LogInformation("TEST LOGGING Loading Homepage");
-    }
-
-
-
-    // better Login Button
-    //
-}

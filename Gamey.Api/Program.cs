@@ -84,7 +84,11 @@ builder.Services.AddSingleton<ISpecialBadgeGroupLogic, SpecialBadgeGroupAchievem
 builder.Services.AddSingleton<IAchievementsFactory, AchievementsFactory>();
 
 // Data layer DI
+builder.Services.AddSingleton<IAchievementDataLayer, AchievementDataLayer>();
+builder.Services.AddSingleton<IBadgeGroupDataLayer, BadgeGroupDataLayer>();
+builder.Services.AddSingleton<IBadgeDataLayer, BadgeDataLayer>();
 builder.Services.AddSingleton<IGameDataLayer, GameDataLayer>();
+builder.Services.AddSingleton<IGamerDataLayer, GamerDataLayer>();
 builder.Services.AddSingleton<IGameEventDataLayer, GameEventDataLayer>();
 builder.Services.AddSingleton<IGameyDbConnection, GameyDbConnection>();
 

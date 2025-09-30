@@ -1,4 +1,6 @@
-﻿@inject IHttpContextAccessor _httpContextAccessor
+﻿@using BlazorBootstrap
+@using Praise.WebApp.Components.Modals
+@inject IHttpContextAccessor _httpContextAccessor
 @inject IConfiguration _configuration
 @inherits LayoutComponentBase
 
@@ -53,6 +55,8 @@
     private string name = "";
     private string TestValue = "Unassigned";
     private string NestedTestValue = "Unassigned";
+    
+    private Modal modal = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,6 +70,9 @@
             if (ctx.User.Identity.IsAuthenticated)
             {
                 name = ctx.User.Identity.Name;
+
+                // configure modal for awarded badges
+
             }
             else
             {

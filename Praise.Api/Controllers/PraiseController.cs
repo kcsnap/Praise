@@ -9,7 +9,7 @@ namespace Praise.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class PraiseController(ILogger<PraiseController> _logger, IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic, IGameLogic gameLogic, IPraiseUserLogic _praiseUserLogic)
+    public class PraiseController(ILogger<PraiseController> _logger, IHttpContextAccessor _contextAccessor, IPraiseLogic praiseLogic, IGameWrapperLogic gameLogic, IPraiseUserLogic _praiseUserLogic)
     {
         /// <summary>
         /// /praise?type=sent | received
@@ -19,12 +19,11 @@ namespace Praise.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<PraiseDetails>> Get([FromQuery(Name = "issender")] bool isSender, [FromQuery(Name = "pagenumber")] int? pageNumber, [FromQuery(Name = "numberperpage")] int? numberPerPage)
         {
+            if (_praiseUserLogic.PraiseUser == null || string.IsNullOrEmpty(_praiseUserLogic.PraiseUser.Email)) throw new Exception("Error with loggedin user");
+            var email = _praiseUserLogic.PraiseUser.Email;
+            
             IEnumerable<PraiseDetails> praises;
-
-            if (string.IsNullOrEmpty(_praiseUserLogic.PraiseUser.Email))
-                throw new BadHttpRequestException("Email is mandatory");
-
-            praises = await praiseLogic.GetPraiseDetails(_praiseUserLogic.PraiseUser.Email, isSender, pageNumber, numberPerPage);
+            praises = await praiseLogic.GetPraiseDetails(email, isSender, pageNumber, numberPerPage);
 
             return praises;
         }

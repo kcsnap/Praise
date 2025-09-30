@@ -7,7 +7,7 @@ namespace Praise.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class GameController(ILogger<GameController> _logger, IGameLogic _gameLogic, IPraiseUserLogic _praiseUserLogic)
+    public class GameController(ILogger<GameController> _logger, IGameWrapperLogic _gameLogic, IPraiseUserLogic _praiseUserLogic)
     {
         [HttpPost(Name = "Register game has started")]
         public async Task Post()

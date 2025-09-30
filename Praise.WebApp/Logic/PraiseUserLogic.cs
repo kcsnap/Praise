@@ -11,7 +11,7 @@ namespace Praise.WebApp.Logic
         public PraiseUserLogic(AuthenticationStateProvider auth)
         {
             _auth = auth;
-            Task.Run(async() => await GetCurrentUserAsync());
+            GetCurrentUserAsync();
         }
 
         public PraiseUser PraiseUser { get; private set; }

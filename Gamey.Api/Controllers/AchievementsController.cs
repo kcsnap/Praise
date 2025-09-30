@@ -10,12 +10,12 @@ namespace Gamey.Api.Controllers
     public class AchievementsController(IHttpContextAccessor _contextAccessor, IAchievementsLogic _achievementsLogic) : Controller
     {
         /// <summary>
-        /// Return a list of ALL available badges indicating if the authenticated user has earned them or not.
+        /// Return a list of achievedbadges indicating if the authenticated user has earned them or not.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>        
         [HttpGet("gamers/{gamerId}/achievements")]
-        public async Task<IEnumerable<Achievement>> Get(string gamerId)
+        public async Task<IEnumerable<Achievement>> Get(Guid gamerId)
         {
             // use gameid to get all badges for that game
             var achievements = await _achievementsLogic.GetAchievementsForGamer(gamerId);
@@ -23,7 +23,7 @@ namespace Gamey.Api.Controllers
         }
 
         [HttpPatch("gamers/{gamerId}/achievements/{achievementId}")]
-        public async Task<Achievement> Claim(string gamerId, string achievementId)
+        public async Task<Achievement> Claim(Guid gamerId, Guid achievementId)
         {
             // use gameid to get all badges for that game
             var achievement = await _achievementsLogic.UpdateAchievement(gamerId, achievementId);

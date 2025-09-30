@@ -4,7 +4,7 @@ using Gamey.Api.Models;
 
 namespace Gamey.Api.Logic
 {
-    public class GameEventsLogic(IGameEventDataLayer _gameEventDataLayer) : IGameEventsLogic
+    public class GameEventsLogic(IGameLogic _gameLogic, IGameEventDataLayer _gameEventDataLayer) : IGameEventsLogic
     {
         protected IList<GameEvent> GameEvents { get; private set; }
 
@@ -47,7 +47,10 @@ namespace Gamey.Api.Logic
 
         public async Task<GameEvent> GetGameEventByCode(string eventCode)
         {
-            return GameEvents.FirstOrDefault(e => e.Code == eventCode);
+            var game = await _gameLogic.GetGame();
+            if(game == null || !game.id.HasValue) throw new Exception("Error retrieving game");
+
+            return await _gameEventDataLayer.ReadByEventCode(game.id.Value, eventCode);
         }
 
         public async Task<IEnumerable<GameEvent>> GetGameEvents(Guid gameId)

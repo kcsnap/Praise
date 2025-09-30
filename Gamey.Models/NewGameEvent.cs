@@ -2,7 +2,7 @@
 {
     public class NewGameEvent
     {
-        public string GamerId { get; set; }
+        public string GamerEmail { get; set; }
         public string EventCode { get; set; }
     }
 }

@@ -19,15 +19,15 @@ namespace Gamey.Api.Controllers
             return await _gamerLogic.AddGamer(gamer);
         }
 
-        /// <summary>
-        /// update an existing gamer to the authenticated users account and return the Gamer details
-        /// </summary>
-        /// <returns></returns>
-        [HttpPatch("gamers/{gamerEmail}")]
-        public async Task<Gamer> Patch(string gamerEmail, Gamer gamer)
-        {
-            return await _gamerLogic.UpdateGamer(gamerEmail, gamer);
-        }
+        ///// <summary>
+        ///// update an existing gamer to the authenticated users account and return the Gamer details
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPatch("gamers/{gamerEmail}")]
+        //public async Task<Gamer> Patch(string gamerEmail, Gamer gamer)
+        //{
+        //    return await _gamerLogic.UpdateGamer(gamerEmail, gamer);
+        //}
                 
         //[HttpGet]        
         //public async Task<GamersResponse> Get()

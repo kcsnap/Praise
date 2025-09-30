@@ -5,6 +5,7 @@ namespace Gamey.Api.Interfaces
     public interface IBadgeLogic
     {
         Task<IEnumerable<BadgeGroupDetails>> GetBadgesAvailableForGame(Guid gameId);
-        Task<IEnumerable<BaseBadgeDetails>> GetBadgesEarnedForEvent(string gamerId, GameEvent gameEventCode);
+        Task<IEnumerable<BaseBadgeDetails>> GetBadgesEarnedForEvent(Guid gameId, Guid gamerId, GameEvent gameEventCode);
+
     }
 }

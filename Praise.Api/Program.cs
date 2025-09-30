@@ -8,7 +8,7 @@ using Praise.Api.Logic.Events;
 using Praise.Api.Logic.Interfaces;
 using Praise.WebApp.Logic;
 using Praise.WebApp.Logic.Events;
-using Praise.WebApp.Logic.Events.EventBindings;
+//using Praise.WebApp.Logic.Events.EventBindings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +18,12 @@ builder.Services.AddScoped<IPraiseUserLogic, PraiseUserLogic>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseDetailsDataLayer, PraiseDetailsDataLayer>();
 builder.Services.AddSingleton<IEmailManagerLogic, EmailManagerLogic>();
-builder.Services.AddSingleton<ISendPraiseEventBindings, SendPraiseEventBindings>();
+//builder.Services.AddSingleton<ISendPraiseEventBindings, SendPraiseEventBindings>();
+builder.Services.AddSingleton<IGameWrapperLogic, GameWrapperLogic>();
+
+// events
 builder.Services.AddSingleton<ISendPraiseReceivedEvent, SubscribeSendPraiseBadgeEvent>();
-builder.Services.AddSingleton<IGameLogic, GameLogic>();
+builder.Services.AddSingleton<ISendPraiseReceivedEvent, SubscribeSendPraiseNotificationEvent>();
 
 builder.Services.AddControllers();
 
@@ -38,6 +41,7 @@ builder.Services.Configure<DatabaseOptions>(
     builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
 builder.Services.Configure<GameApiOptions>(
     builder.Configuration.GetSection(GameApiOptions.ConfigNode));
+
 
 // Add the Azure Monitor telemetry service to the application.
 // This service will collect and send telemetry data to Azure Monitor.

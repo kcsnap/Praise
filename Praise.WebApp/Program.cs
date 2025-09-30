@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseTypeLogic, PraiseTypeLogic>();
 builder.Services.AddSingleton<IRecentActivityLogic, RecentActivityLogic>();
+builder.Services.AddSingleton<IBadgeLogic, BadgeLogic>();
 
 builder.Services.AddBlazorBootstrap();
 

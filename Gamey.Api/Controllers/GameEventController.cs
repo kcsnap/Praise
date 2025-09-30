@@ -9,23 +9,20 @@ namespace Gamey.Api.Controllers
 {
     [ApiController]
     [Authorize]    
-    public class GameEventController(IHttpContextAccessor _contextAccessor, IGameLogic _gameLogic, IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic) : Controller
+    public class GameEventController(IGameLogic _gameLogic, IGamerLogic _gamerLogic, IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic) : Controller
     {
         [HttpGet("gameevent")]
         public async Task<IEnumerable<GameEvent>> Get()
         {
-            // we don't need user here, we just need clientid from authenticated client
-            var clientId = _contextAccessor.HttpContext.Request.Headers["X-CLIENT-ID"];
-            var game = await _gameLogic.GetGame(clientId);
-
-            if (game == null) throw new Exception("Error retrieving game for client id : " + clientId);
+            var game = await _gameLogic.GetGame();
+            if (game == null) throw new Exception("Error retrieving game");
 
             var events = await gameEventsLogic.GetGameEvents(game.id.Value);
             return events;
         }
 
         /// <summary>
-        /// Indiciate the user has triggered a new event and return NEW (only!) badges awarded as a result
+        /// Indicate the user has triggered a new event and return NEW (only!) badges awarded as a result
         /// </summary>
         /// <param name="newGameEvent"></param>
         /// <returns></returns>
@@ -38,13 +35,16 @@ namespace Gamey.Api.Controllers
 
             // find event by code
             var gameEvent = await gameEventsLogic.GetGameEventByCode(newGameEvent.EventCode);
+            if (gameEvent == null) throw new BadHttpRequestException("EventCode is invalid");
 
-            if (gameEvent == null)
-                throw new BadHttpRequestException("EventCode is invalid");
+            var game = await _gameLogic.GetGame();
+            if (game == null || !game.id.HasValue) throw new BadHttpRequestException("game not found");
+
+            var gamer = await _gamerLogic.GetGamerByEmail(newGameEvent.GamerEmail);
+            if (gamer == null || !gamer.id.HasValue) throw new BadHttpRequestException("gamer not found");
 
             // check for new badges...
-            // TODO RETURN NEW BADGES, IF ANY!!!
-            var badges = await badgeLogic.GetBadgesEarnedForEvent(newGameEvent.GamerId, gameEvent);
+            var badges = await badgeLogic.GetBadgesEarnedForEvent(game.id.Value, gamer.id.Value, gameEvent);
 
             return new ResponseBadges
             {

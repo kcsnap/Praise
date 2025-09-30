@@ -67,7 +67,8 @@ namespace Praise.WebApp.Logic
         public static string GameUrl = "Game";
         public static string RecentActivityUrl = "RecentActivity";
         public static string PraiseUrl = "Praise";
-
+        public static string BadgeUrl = "Badge";
+        
         public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url)
         {
             return await GetAsync<T>(praiseUser, url, null, string.Empty);

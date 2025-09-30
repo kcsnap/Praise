@@ -1,4 +1,5 @@
 ﻿@page "/sendapraise"
+@attribute [Authorize]
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider Auth
 @inject IPraiseLogic praiseLogic
@@ -13,8 +14,6 @@
 @using Praise.WebApp.Logic.Interfaces
 @using Praise.Models;
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
-
 
 <div class="line-text">
     <span>Send Praise</span>
@@ -106,25 +105,8 @@ else
     {
         try
         {
-            try
-            {
-                var email = RecipientEmail;
-            }
-            catch
-            {
-                _logger.LogError("TO REMOVE - RecipientEmail is NULL");
-
-            }
-            try
-            {
-                var name = selectedPraiseType;
-            }
-            catch
-            {
-                _logger.LogError("TO REMOVE - selectedPraiseType is NULL");
-
-            }
-
+            var email = RecipientEmail;
+            var name = selectedPraiseType;
 
             // send the praise to the recipient and confirmation to user
             await praiseLogic.SendPraise(

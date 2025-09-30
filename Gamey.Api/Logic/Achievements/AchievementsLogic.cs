@@ -1,52 +1,43 @@
-﻿using Gamey.Api.Interfaces;
+﻿using Gamey.Api.DataLayer.Interfaces;
+using Gamey.Api.Interfaces;
 using Gamey.Api.Models;
 
 namespace Gamey.Api.Logic.Achievements
 {
-    public class AchievementsLogic : IAchievementsLogic
+    public class AchievementsLogic(IAchievementDataLayer _achievementsDataLayer) : IAchievementsLogic
     {
-        protected IList<Achievement> Achievements { get; private set; }
-
-        public AchievementsLogic()
+        public async Task<IEnumerable<Achievement>> GetAchievementsForGamer(Guid gamerId)
         {
-            Achievements = new List<Achievement>()
+            return await _achievementsDataLayer.Read(gamerId);
+        }
+
+        public async Task<Achievement> UpdateAchievement(Guid gamerId, Guid achievementId)
+        {
+            // should be exactly 1
+            var achievements = await _achievementsDataLayer.Read(gamerId);
+            var achievement = achievements.SingleOrDefault(a => a.id == achievementId && a.GamerId == gamerId);
+
+            // check we've found achievement
+            if (achievement == null) throw new Exception("Can't find achievement for achievementid: " + achievementId + " and gamerid: " + gamerId);
+
+            achievement.DateClaimed = DateTime.UtcNow;
+            return await _achievementsDataLayer.Save(achievement);
+        }
+
+        public async Task<Achievement> AddAchievement(Guid gamerId, Guid badgeId)
+        {
+            return await _achievementsDataLayer.Save(new Achievement
             {
-                new Achievement
-                {
-                    Id = "achievement-id-1",
-                    BadgeId = "badge-id-1",
-                    GamerId = "kenneth.cox@snapwire.co.uk",
-                    DateAchieved = DateTime.UtcNow,
-                    DateClaimed = null
-                }
-            };
+                GamerId = gamerId, 
+                BadgeId = badgeId,
+                DateAchieved = DateTime.UtcNow                
+            });
         }
 
-        public async Task<IEnumerable<Achievement>> GetAchievementsForGamer(string gamerId)
+        public async Task<bool> Exists(Guid gamerId, Guid badgeId)
         {
-            return Achievements.Where(a => a.GamerId == gamerId);
-        }
-
-        public async Task<Achievement> UpdateAchievement(string gamerId, string achievementId)
-        {
-            // TODO 
-
-            return Achievements.FirstOrDefault(a => a.GamerId == gamerId && a.Id == achievementId);
-        }
-
-        public async Task<Achievement> SaveAchievement(Achievement achievement)
-        {
-            // TODO 
-
-            return achievement;
-        }
-
-        public async Task<bool> Exists(Gamer gamer, string badgeId)
-        {
-            // special badge groups only have 1 badge!
-            return string.IsNullOrEmpty(badgeId) != null ?
-                Achievements.Any(a => a.GamerId == gamer.Id && a.BadgeId == badgeId) :
-                false;
+            var achievements = await _achievementsDataLayer.Read(gamerId);
+            return achievements.Any(a => a.BadgeId == badgeId);
         }
     }
 }

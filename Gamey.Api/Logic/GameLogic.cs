@@ -4,39 +4,27 @@ using Gamey.Api.DataLayer.Interfaces;
 
 namespace Gamey.Api.Logic
 {
-    public class GameLogic(IGameDataLayer _gameDataLayer) : IGameLogic
+    public class GameLogic : IGameLogic
     {
-        protected Game Game { get; private set; }
-
-        //public GameLogic()
-        //{
-        //    // load the available events (eventually move to database so can be configured per user registered!)
-        //    //LoadGame();
-        //}
-
-        //protected async Task LoadGame()
-        //{
-        //    //Game = new Game
-        //    //{ 
-        //    //    id = new Guid("01234567-89AB-CDEF-FEDC-BA9876543210"),
-        //    //    ClientId = "_clientid",
-        //    //    EncryptedApiKey = "123",
-        //    //    GameName = "Praise",
-        //    //    GameDescription = "Gamification of Praise"
-        //    //};
-        //}
-
-        public async Task<Game> GetGame(string clientId)
+        protected readonly Game Game;
+        protected readonly IGameDataLayer _gameDataLayer;
+        
+        public GameLogic(IHttpContextAccessor _contextAccessor, IGameDataLayer gameDataLayer)
         {
+            _gameDataLayer = gameDataLayer;
+
+            // we don't need user here, we just need clientid from authenticated client
+            var clientId = _contextAccessor.HttpContext.Request.Headers["X-CLIENT-ID"];
+            if(string.IsNullOrEmpty(clientId)) throw new Exception("Invalid ClientId" + clientId);
+
             // get game associated to the client id
-            Game = await _gameDataLayer.ReadByClientId(clientId);
+            Game = Task.Run(async() => await _gameDataLayer.ReadByClientId(clientId)).Result;
+        }
 
+        public async Task<Game> GetGame()
+        {            
             if (Game == null) throw new Exception("Game not configured");
-
-            if(Game.ClientId == clientId)
-                return Game;
-            else
-                throw new Exception("Invalid ClientId" + clientId);
+            return Game;
         }
     }
 }

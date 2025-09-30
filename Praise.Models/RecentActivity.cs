@@ -5,6 +5,6 @@
         public int? TotalNumberOfPraisesSent { get; set; }
         public IEnumerable<PraiseDetails> PraisesSent { get; set; }
         public IEnumerable<PraiseDetails> PraisesReceived { get; set; }
-        public IList<BadgeDetails> BadgesReceived { get; set; }
+        public IList<BadgeDetailsViewModel> BadgesReceived { get; set; }
     }
 }

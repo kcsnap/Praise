@@ -14,7 +14,7 @@ namespace Praise.Api.Logic
         {
             //_auth = auth;
             _contextAccessor = contextAccessor;
-            Task.Run(async() => await GetCurrentUserAsync());
+            GetCurrentUserAsync();
         }
 
         public PraiseUser PraiseUser { get; private set; }

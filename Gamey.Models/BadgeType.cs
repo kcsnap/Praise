@@ -1,5 +1,8 @@
-﻿namespace Gamey.Api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Gamey.Api.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum BadgeType
     {
         Streak, // e.g., for maintaining a daily login streak (7 days, 30 days, etc.)
