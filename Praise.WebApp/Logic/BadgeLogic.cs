@@ -3,7 +3,7 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class BadgeLogic(IHttpContextAccessor _httpAccessor, ILogger<BadgeLogic> _logger, IPraiseApi praiseApi) : IBadgeLogic
+    public class BadgeLogic(IHttpContextAccessor _httpAccessor, ILogger<BadgeLogic> _logger, IPraiseApiWrapper praiseApi) : IBadgeLogic
     {
         /// <summary>
         /// Get badges for game and claimed date
@@ -14,6 +14,12 @@ namespace Praise.WebApp.Logic
         {
             var badges = await praiseApi.GetAsync<IEnumerable<BadgeGroupViewModel>>(praiseUser, PraiseApiWrapper.BadgeUrl);
             return badges;
+        }
+
+        public async Task ClaimBadge(IPraiseUserLogic praiseUser, Guid achievementId)
+        {
+            var path = string.Format(PraiseApiWrapper.AchievementsPatchUrl, achievementId);
+            await praiseApi.PatchAsync(praiseUser, path);            
         }
     }
 }

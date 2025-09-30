@@ -16,6 +16,7 @@ namespace Praise.Api.Logic
         public static string _gameEventUrl = "gameevent";
         public static string _gamerUrl = "gamers/{0}"; // 0 = gamerEmail
         public static string _achievementsUrl = "gamers/{0}/achievements"; // 0 = gamerId
+        public static string _achievementsPatchUrl = "gamers/{0}/achievements/{1}"; // 0 = gamerId, 1 = achievementId
 
         protected HttpClient client;
         protected string bearerToken;
@@ -87,6 +88,14 @@ namespace Praise.Api.Logic
             var response = await GetAsync<IEnumerable<Achievement>>(_praiseUserLogic, path);
             return response;
         }
+        public async Task UpdateAchievements(IPraiseUserLogic _praiseUserLogic, Guid achievementId)
+        {
+            await Initialise(_praiseUserLogic);
+            var path = string.Format(_achievementsPatchUrl, _gamer.id, achievementId);
+
+            // api call to GameEvent
+            await PatchAsync(_praiseUserLogic, path);
+        }
 
         public async Task<IEnumerable<BadgeGroupDetails>> GetAllBadges(IPraiseUserLogic _praiseUserLogic)
         {
@@ -126,13 +135,21 @@ namespace Praise.Api.Logic
         {
             return await CallApi<T, S>(praiseUser, HttpMethods.POST, url, payload);
         }
+        protected async Task PatchAsync(IPraiseUserLogic praiseUser, string url)
+        {
+            await CallApi(praiseUser, HttpMethods.PATCH, url);
+        }
 
         protected enum HttpMethods
         {
             GET,
-            POST
+            POST,
+            PATCH
         }
-
+        protected async Task CallApi(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url)
+        {
+            await CallApi<object>(praiseUser, httpMethod, url, null);
+        }
         protected async Task<T> CallApi<T>(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url)
         {
             return await CallApi(praiseUser, httpMethod, url, default(T?));
@@ -152,9 +169,13 @@ namespace Praise.Api.Logic
                 {
                     response = await client.GetAsync(path);
                 }
-                else // if(httpMethod == HttpMethods.POST)
+                else if (httpMethod == HttpMethods.POST)
                 {
                     response = await client.PostAsJsonAsync<T>(path, payloadObject);
+                }
+                else
+                {
+                    response = await client.PatchAsJsonAsync<T>(path, payloadObject);
                 }
 
                 if (response.IsSuccessStatusCode)

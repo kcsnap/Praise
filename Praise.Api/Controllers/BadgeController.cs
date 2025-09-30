@@ -25,9 +25,6 @@ namespace Praise.Api.Controllers
                 // get current achievements
                 var achievements = await _gameLogic.GetAchievements(_praiseUserLogic);
 
-                // filter those unclaimed
-                var unclaimedAchievements = achievements.Where(a => !a.DateClaimed.HasValue);
-
                 // get badge details of those unclaimed
                 var badgeGroupDetails = new List<BadgeGroupViewModel>();
                 foreach(var badgeGroup in allBadges)
@@ -35,13 +32,17 @@ namespace Praise.Api.Controllers
                     var tempBadges = new List<BadgeDetailsViewModel>();
                     foreach (var badge in badgeGroup.BadgeDetails)
                     {
+                        var achievement = achievements.SingleOrDefault(ua => ua.BadgeId == badge.id);
+                        
                         tempBadges.Add(new BadgeDetailsViewModel
                         {
                             BadgeId = badge.id.Value,
+                            AchievementId = achievement != null ? achievement.id.Value : null,
                             BadgeSubtitle = badge.BadgeSubtitle,
-                            BadgeDateEarned = unclaimedAchievements.SingleOrDefault(ua => ua.BadgeId == badge.id)?.DateAchieved,
-                            BadgeDateClaimed = unclaimedAchievements.SingleOrDefault(ua => ua.BadgeId == badge.id)?.DateClaimed,
-                            BadgeImageUrl = badge.BadgeImageUrl
+                            BadgeDateEarned = achievement != null ? achievement.DateAchieved : null,
+                            BadgeDateClaimed = achievement != null ? achievement.DateClaimed : null,
+                            BadgeImageUrl = badge.BadgeImageUrl,
+                            BadgeType = badge.BadgeType
                         });
                     }
 

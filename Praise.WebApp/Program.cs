@@ -31,7 +31,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPraiseUserLogic, PraiseUserLogic>();
-builder.Services.AddSingleton<IPraiseApi, PraiseApiWrapper>();
+builder.Services.AddSingleton<IPraiseApiWrapper, PraiseApiWrapper>();
 builder.Services.AddSingleton<IPraiseAuthentication, PraiseAuthentication>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseTypeLogic, PraiseTypeLogic>();

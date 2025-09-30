@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseApiWrapper : IPraiseApi
+    public class PraiseApiWrapper : IPraiseApiWrapper
     {
         protected HttpClient client;
         protected string bearerToken;
@@ -68,7 +68,8 @@ namespace Praise.WebApp.Logic
         public static string RecentActivityUrl = "RecentActivity";
         public static string PraiseUrl = "Praise";
         public static string BadgeUrl = "Badge";
-        
+        public static string AchievementsPatchUrl = "Achievements/{0}"; // 0 = achievement id
+
         public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url)
         {
             return await GetAsync<T>(praiseUser, url, null, string.Empty);
@@ -107,13 +108,22 @@ namespace Praise.WebApp.Logic
         {
             return await CallApi<T>(praiseUser, HttpMethods.POST, url, payload);
         }
+        public async Task PatchAsync(IPraiseUserLogic praiseUser, string url)
+        {
+            await CallApi(praiseUser, HttpMethods.PATCH, url);
+        }
 
         public enum HttpMethods
         {
             GET,
-            POST
+            POST,
+            PATCH
         }
 
+        protected async Task CallApi(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url)
+        {
+            await CallApi<object>(praiseUser, httpMethod, url, null);
+        }
         public async Task<T> CallApi<T>(IPraiseUserLogic praiseUser, HttpMethods httpMethod, string url)
         {
             return await CallApi(praiseUser, httpMethod, url, default(T?));
@@ -140,9 +150,13 @@ namespace Praise.WebApp.Logic
                 {
                     response = await client.GetAsync(path);
                 }
-                else // if(httpMethod == HttpMethods.POST)
+                else if(httpMethod == HttpMethods.POST)
                 {
                     response = await client.PostAsJsonAsync<T>(path, payloadObject);
+                }
+                else
+                {
+                    response = await client.PatchAsJsonAsync<T>(path, payloadObject);
                 }
 
                 if (response.IsSuccessStatusCode)

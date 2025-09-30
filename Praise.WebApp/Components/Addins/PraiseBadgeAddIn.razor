@@ -1,0 +1,59 @@
+﻿@using Praise.Models
+@using Praise.WebApp.Logic
+@using Praise.WebApp.Logic.Interfaces
+@inject IPraiseApiWrapper _praiseApiWrapper
+@inject IPraiseUserLogic _praiseUserLogic
+
+<div class="col-xl-3 col-lg-4 col-sm-6 col-12 justify-content-center text-center pb-4 badge-container">
+    <img src="/images/badges/@badgeVm.BadgeImageUrl" class="badge-image" />
+    <span class="badge-subtitle">@badgeVm.BadgeSubtitle</span>
+
+    @if(badgeVm.BadgeDateEarned != null)
+    {
+        <span class="badge-date badge-date-earned">Earned @badgeVm.BadgeDateEarned?.ToString("dd MMMM yyyy")</span>
+        @if(badgeVm.BadgeDateClaimed != null)
+        {
+            <span class="badge-date badge-date-claimed">Claimed @badgeVm.BadgeDateClaimed?.ToString("dd MMMM yyyy")</span>
+        }
+        else
+        {
+            <Button Class="me-2 button button-claim-now mt-1 celebrate-btn" @onclick="ClaimNow">Claim now</Button> 
+        }
+    }
+    else
+    {
+        <div class="badge-not-yet-earned">
+            <span>Not yet earned</span>
+        </div>
+    }    
+</div>
+
+@code {
+    [Parameter]
+    public BadgeDetailsViewModel badgeVm { get; set; }
+
+    protected void ClaimNow()
+    {
+        try
+        {
+            var achievementId = badgeVm.AchievementId;
+
+            var path = string.Format(PraiseApiWrapper.AchievementsPatchUrl, achievementId);
+
+            // fire&forget off API - assume it works...
+            Task.Run(async() => await _praiseApiWrapper.PatchAsync(_praiseUserLogic, path));
+
+            // display 'claimed' message!
+            badgeVm.BadgeDateClaimed = DateTime.Now;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            var msg = "SendAPraise.SendPraise: [see inner exception]";
+            // _logger.LogError(ex, msg);
+
+            // todo - how to visualise this to the user
+            throw new Exception(msg, ex);
+        }
+    }
+}

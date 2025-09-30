@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Gamey.Models\Gamey.Models.csproj" />
+  </ItemGroup>
+
 </Project>

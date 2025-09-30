@@ -4,7 +4,7 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class RecentActivityLogic(IHttpContextAccessor contextAccessor, IPraiseApi praiseApi) : IRecentActivityLogic
+    public class RecentActivityLogic(IHttpContextAccessor contextAccessor, IPraiseApiWrapper praiseApi) : IRecentActivityLogic
     {
         public async Task<RecentActivity> GetRecentActivityForUser(IPraiseUserLogic praiseUser)
         {

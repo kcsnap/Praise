@@ -5,7 +5,7 @@ using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
 {
-    public class PraiseLogic(IHttpContextAccessor _httpAccessor, ILogger<PraiseLogic> _logger, IPraiseApi praiseApi) : IPraiseLogic
+    public class PraiseLogic(IHttpContextAccessor _httpAccessor, ILogger<PraiseLogic> _logger, IPraiseApiWrapper praiseApi) : IPraiseLogic
     {
         public async Task<IEnumerable<PraiseDetails>> GetPraisesReceived(IPraiseUserLogic praiseUser)
         {
