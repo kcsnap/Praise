@@ -41,21 +41,24 @@ namespace Praise.Api.Logic
         {
             // ** can't inject IPraiseUserLogic in constructor due to Scoped vs Singleton DI **
 
-            // if previously initialised...
-            if (client != null) return;
-
             try
             {
-                var fromEmail = _praiseUserLogic.PraiseUser.Email;
+                if (client == null)
+                {
+                    var fromEmail = _praiseUserLogic.PraiseUser.Email;
 
-                _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
-                client = new HttpClient();
-                client.DefaultRequestHeaders.Add("X-CLIENT-ID", _gameApiOptions.ClientId);
-                client.DefaultRequestHeaders.Add("X-API-KEY", _gameApiOptions.ApiKey);
-                _logger.LogInformation("Instantiated Praise HttpClient username header for " + fromEmail);
+                    _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
+                    client = new HttpClient();
+                    client.DefaultRequestHeaders.Add("X-CLIENT-ID", _gameApiOptions.ClientId);
+                    client.DefaultRequestHeaders.Add("X-API-KEY", _gameApiOptions.ApiKey);
+                    _logger.LogInformation("Instantiated Praise HttpClient client and api key header for " + fromEmail);
 
-                // get gamer details on load
-                await LoadGameAndGamer(_praiseUserLogic);
+                    await LoadGame(_praiseUserLogic);
+                }
+
+                // always reload gamer
+                await LoadGamer(_praiseUserLogic);
+
             }
             catch (Exception ex)
             {
@@ -64,12 +67,14 @@ namespace Praise.Api.Logic
                 throw new Exception(msg, ex);
             }
         }
-
-        protected async Task LoadGameAndGamer(IPraiseUserLogic _praiseUserLogic)
+        protected async Task LoadGame(IPraiseUserLogic _praiseUserLogic)
         {
             var gameResponse = await GetAsync<Game>(_praiseUserLogic, _gameUrl);
             _game = gameResponse;
+        }
 
+        protected async Task LoadGamer(IPraiseUserLogic _praiseUserLogic)
+        {
             var gamerPath = string.Format(_gamerUrl, _praiseUserLogic.PraiseUser.Email);
             var gamerResponse = await GetAsync<Gamer>(_praiseUserLogic, gamerPath);
             _gamer = gamerResponse;
@@ -116,6 +121,8 @@ namespace Praise.Api.Logic
 
         public async Task SendPraiseEvent(IPraiseUserLogic _praiseUserLogic)
         {
+            await Initialise(_praiseUserLogic);
+
             // api call to GameEvent
             var responseSendPraise = await PostAsync<NewGameEvent, ResponseGameBadges>(_praiseUserLogic, _gameEventUrl, new NewGameEvent
             {

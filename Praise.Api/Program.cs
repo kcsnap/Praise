@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPraiseUserLogic, PraiseUserLogic>();
+builder.Services.AddSingleton<IPraiseUserLogic, PraiseUserLogic>();
 builder.Services.AddSingleton<IPraiseLogic, PraiseLogic>();
 builder.Services.AddSingleton<IPraiseDetailsDataLayer, PraiseDetailsDataLayer>();
 builder.Services.AddSingleton<IEmailManagerLogic, EmailManagerLogic>();

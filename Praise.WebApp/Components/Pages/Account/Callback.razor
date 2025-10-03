@@ -25,64 +25,7 @@
             {
                 _logger.LogInformation("Callback.OnInitializedAsync() user is authentication");
                 await PraiseApi.Initialise(praiseUserLogic);
-
-
-
-                
-
-
-                // // var client = new RestClient("https://dev-snapwire01.uk.auth0.com/oauth/token");
-                // // var request = new RestRequest(Method.POST);
-                // // request.AddHeader("content-type", "application/x-www-form-urlencoded");
-                // // request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&audience=YOUR_API_IDENTIFIER", ParameterType.RequestBody);
-                // // IRestResponse response = client.Execute(request);
-                // using var client = new HttpClient();
-
-                // // Set the request URL
-                // var url = "https://dev-snapwire01.uk.auth0.com/oauth/token";
-
-                // // Prepare the form data
-                // var formData = new FormUrlEncodedContent(new[]
-                // {
-                //     new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                //     new KeyValuePair<string, string>("client_id", ""),
-                //     new KeyValuePair<string, string>("client_secret", ""),
-                //     new KeyValuePair<string, string>("audience", "")
-                // });
-
-                // // Send the POST request
-                // var response = await client.PostAsync(url, formData);
-
-                // // Read the response content
-                // var content = await response.Content.ReadAsStringAsync();
-
-                // var path = "https://localhost:7222/PraiseType";
-                // using var client2 = new HttpClient();
-
-                // var bearerToken = System.Text.Json.JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
-                // client2.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                // client2.DefaultRequestHeaders.Add("username", _contextAccessor.HttpContext.User.Identity.Name);
-
-                // HttpResponseMessage response2 = await client2.GetAsync(path);
-                // if (response2.IsSuccessStatusCode)
-                // {
-                //     var result = await response2.Content.ReadAsAsync<string>();
-                //     //return result;
-                // }
-
-                // TODO - LOG THEN REDIRECT!
-                // var user = ctx.User;
-                // var userInfo = new
-                // {
-                //     Name = user.Identity.Name,
-                //     Email = user.FindFirst("email")?.Value,
-                //     Picture = user.FindFirst("picture")?.Value
-                // };
-                // Here you would typically save the userInfo to local storage or session
-                // For example, using a JavaScript interop call to save it in local storage
-                // await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", JsonSerializer.Serialize(userInfo));
-                //await ProtectedLocalStore.SetAsync("name", userInfo.Name);
-    }
+            }
         }
         catch(Exception ex)
         {

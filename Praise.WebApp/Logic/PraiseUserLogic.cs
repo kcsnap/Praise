@@ -11,25 +11,28 @@ namespace Praise.WebApp.Logic
         public PraiseUserLogic(AuthenticationStateProvider auth)
         {
             _auth = auth;
-            GetCurrentUserAsync();
         }
 
-        public PraiseUser PraiseUser { get; private set; }
-
-        public async Task GetCurrentUserAsync()
+        public PraiseUser PraiseUser 
         {
-            var user = (await _auth.GetAuthenticationStateAsync()).User;
-
-            var nickname = user.Claims.First(c => c.Type == "nickname").Value;
-            var email = user.Claims.First(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
-            var userId = user.Claims.First(c => c.Type == "sid").Value;
-
-            PraiseUser = new PraiseUser()
+            get
             {
-                DisplayName = nickname,
-                Email = email, 
-                UserId = userId
-            };
+                var authState = Task.Run(async () => await _auth.GetAuthenticationStateAsync());
+                var user = authState.Result.User;
+
+                var nickname = user.Claims.First(c => c.Type == "nickname").Value;
+                var email = user.Claims.First(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
+                var userId = user.Claims.First(c => c.Type == "sid").Value;
+
+                var _user = new PraiseUser()
+                {
+                    DisplayName = nickname,
+                    Email = email,
+                    UserId = userId
+                };
+
+                return _user;
+            }
         }
     }
 }
