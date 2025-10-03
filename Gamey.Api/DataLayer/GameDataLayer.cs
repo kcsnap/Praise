@@ -62,51 +62,5 @@ namespace Gamey.Api.DataLayer
                 throw new Exception(error, ex);
             }
         }
-
-        //protected async Task<IEnumerable<Game>> ReadByEmail(string email, bool isSender, int? pageNumber, int? numberPerPage)
-        //{
-        //    try
-        //    {
-        //        var response = new List<Game>();
-        //        var query = isSender ?
-        //            "SELECT * FROM PraiseContainer p WHERE p.FromEmail = @email ORDER BY p.PraiseDate DESC"
-        //            : "SELECT * FROM PraiseContainer p WHERE p.ToEmail = @email ORDER BY p.PraiseDate DESC";
-
-        //        // only add pagination if both values are provided
-        //        if (pageNumber.HasValue && numberPerPage.HasValue)
-        //        {
-        //            int offset = (pageNumber.Value - 1) * numberPerPage.Value;
-        //            query += $" OFFSET {offset} LIMIT {numberPerPage.Value}";
-        //        }
-
-        //        // Build query definition
-        //        var parameterizedQuery = new QueryDefinition(query: query).WithParameter("@email", email);
-
-        //        // Query multiple items from container
-        //        using FeedIterator<PraiseDetails> filteredFeed = praiseContainer.GetItemQueryIterator<PraiseDetails>(
-        //            queryDefinition: parameterizedQuery
-        //        );
-
-        //        // Iterate query result pages
-        //        while (filteredFeed.HasMoreResults)
-        //        {
-        //            FeedResponse<PraiseDetails> dbPraises = await filteredFeed.ReadNextAsync();
-
-        //            // Iterate query results
-        //            foreach (PraiseDetails item in dbPraises)
-        //            {
-        //                response.Add(item);
-        //            }
-        //        }
-
-        //        return response;
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        var error = "Error in PraiseDetailsDataLayer.ReadByEmail (email = " + email + ")";
-        //        _logger.LogError(ex, error);
-        //        throw new Exception(error, ex);
-        //    }
-        //}
     }
 }

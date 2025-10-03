@@ -14,7 +14,7 @@ namespace Praise.Api.Controllers
         {
             try
             {
-                await _gameLogic.RegisterGamer(_praiseUserLogic);
+                await _gameLogic.RegisterGamer(_praiseUserLogic);                
             }
             catch (Exception ex)
             {

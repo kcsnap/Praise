@@ -6,7 +6,6 @@ namespace Gamey.Api.DataLayer
 {    
     public class GameEventDataLayer(ILogger<GameEventDataLayer> _logger, IGameyDbConnection _gameyDbConnection) : IGameEventDataLayer
     {
-
         public async Task<IEnumerable<GameEvent>> Read(Guid gameId)
         {
             var response = new List<GameEvent>();

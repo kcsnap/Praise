@@ -6,5 +6,6 @@ namespace Gamey.Api.DataLayer.Interfaces
     {
         Task<Gamer> ReadByGamerId(Guid gamerId);
         Task<Gamer> ReadByGamerEmail(string gamerEmail);
+        Task<Gamer> Save(Gamer gamer);
     }
 }

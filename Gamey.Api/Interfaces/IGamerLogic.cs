@@ -6,6 +6,6 @@ namespace Gamey.Api.Interfaces
     {
         Task<Gamer> GetGamerById(Guid gamerId);
         Task<Gamer> GetGamerByEmail(string gamerEmail);
-        Task<Gamer> AddGamer(Gamer gamer);
+        Task<Gamer> AddGamer(NewGamer gamer);
     }
 }

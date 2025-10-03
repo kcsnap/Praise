@@ -7,7 +7,7 @@ namespace Praise.WebApp.Logic
     {
         public event EventHandler<SendPraiseEventArgs> SendPraisePublished;
 
-        public async void PublishSendPraiseEvent(PraiseDetails praiseDetails)
+        public async Task PublishSendPraiseEvent(PraiseDetails praiseDetails)
         {
             // commit to db then publish event
             try

@@ -9,6 +9,6 @@ namespace Praise.WebApp.Logic
         Task<IEnumerable<PraiseDetails>> GetPraiseDetails(string email, bool isSender, int? pageNumber, int? numberPerPage);
         event EventHandler<SendPraiseEventArgs> SendPraisePublished;
 
-        void PublishSendPraiseEvent(PraiseDetails _praiseDetails);
+        Task PublishSendPraiseEvent(PraiseDetails _praiseDetails);
     }
 }

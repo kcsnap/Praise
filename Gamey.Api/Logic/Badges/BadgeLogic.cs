@@ -64,7 +64,7 @@ namespace Gamey.Api.Logic.Badges
             if (badgeAwarded == null) return null;
 
             var achievement = await _achievementsLogic.AddAchievement(gamer.id.Value, badgeAwarded.id.Value);
-            if (achievement == null) throw new Exception("Error adding achievment for gamerid: " + gamer.id + " and badgeGroup: " + badgeGroupDetails.id);
+            if (achievement == null) throw new Exception("Error adding achievement for gamerid: " + gamer.id + " and badgeGroup: " + badgeGroupDetails.id);
 
             return badgeAwarded;
         }

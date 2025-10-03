@@ -1,5 +1,6 @@
 ﻿using Gamey.Api.DataLayer.Interfaces;
 using Gamey.Api.Models;
+using Gamey.Models.Converters;
 using Microsoft.Azure.Cosmos;
 using System;
 using System.Text.Json;

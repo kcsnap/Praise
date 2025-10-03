@@ -10,6 +10,7 @@ using Gamey.Api.Interfaces;
 using Gamey.Api.Logic;
 using Gamey.Api.Logic.Achievements;
 using Gamey.Api.Logic.Badges;
+using Gamey.Api.Logic.Prizes;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,25 +76,37 @@ builder.Services.AddAuthentication("ApiKeyScheme")
 
 // DI
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<IGameEventsLogic, GameEventsLogic>();
+builder.Services.AddSingleton<IAchievementsFactory, AchievementsFactory>();
+builder.Services.AddSingleton<IAchievementsLogic, AchievementsLogic>();
+builder.Services.AddSingleton<IActionHistoryLogic, ActionHistoryLogic>();
 builder.Services.AddSingleton<IBadgeLogic, BadgeLogic>();
+builder.Services.AddSingleton<IGameEventsLogic, GameEventsLogic>();
 builder.Services.AddSingleton<IGamerLogic, GamerLogic>();
 builder.Services.AddSingleton<IGameLogic, GameLogic>();
-builder.Services.AddSingleton<IAchievementsLogic, AchievementsLogic>();
 builder.Services.AddSingleton<ISpecialBadgeGroupLogic, SpecialBadgeGroupAchievementLogic>();
-builder.Services.AddSingleton<IAchievementsFactory, AchievementsFactory>();
+builder.Services.AddSingleton<ICountBadgeGroupLogic, CountBadgeGroupLogic>();
+builder.Services.AddSingleton<IStreakBadgeGroupLogic, StreakBadgeGroupLogic>();
+builder.Services.AddSingleton<ISecureEncryption, SecureEncryption>();
+builder.Services.AddSingleton<ITokenWalletLogic, TokenWalletLogic>();
+builder.Services.AddSingleton<IPrizeGroupLogic, GamePrizeLogic>();
 
 // Data layer DI
 builder.Services.AddSingleton<IAchievementDataLayer, AchievementDataLayer>();
+builder.Services.AddSingleton<IActionHistoryDataLayer, ActionHistoryDataLayer>();
 builder.Services.AddSingleton<IBadgeGroupDataLayer, BadgeGroupDataLayer>();
 builder.Services.AddSingleton<IBadgeDataLayer, BadgeDataLayer>();
 builder.Services.AddSingleton<IGameDataLayer, GameDataLayer>();
 builder.Services.AddSingleton<IGamerDataLayer, GamerDataLayer>();
 builder.Services.AddSingleton<IGameEventDataLayer, GameEventDataLayer>();
+builder.Services.AddSingleton<IGamerEventDataDataLayer, GamerEventDataDataLayer>();
 builder.Services.AddSingleton<IGameyDbConnection, GameyDbConnection>();
+builder.Services.AddSingleton<ITokenWalletDataLayer, TokenWalletDataLayer>();
+builder.Services.AddSingleton<IPrizeGroupDataLayer, PrizeGroupDataLayer>();
 
-builder.Services.Configure<DatabaseOptions>(
-    builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
+// Config options
+builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
+builder.Services.Configure<TokenContractOptions>(builder.Configuration.GetSection(TokenContractOptions.ConfigNode));
+builder.Services.Configure<TokenEncryptionOptions>(builder.Configuration.GetSection(TokenEncryptionOptions.ConfigNode));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

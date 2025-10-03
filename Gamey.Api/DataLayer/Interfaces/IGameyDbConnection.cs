@@ -10,5 +10,9 @@ namespace Gamey.Api.DataLayer.Interfaces
         Container BadgeContainer { get; set; }
         Container BadgeGroupContainer { get; set; }
         Container GamerContainer { get; set; }
+        Container ActionHistoryContainer { get; set; }
+        Container GamerEventDataContainer { get; set; }
+        Container PrizeGroupsContainer { get; set; }
+        Container WalletContainer { get; set; }
     }
 }

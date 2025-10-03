@@ -8,4 +8,6 @@ namespace Gamey.Api.Logic
     }
 
     public interface ISpecialBadgeGroupLogic : IAwardsLogic;
+    public interface ICountBadgeGroupLogic : IAwardsLogic;
+    public interface IStreakBadgeGroupLogic : IAwardsLogic;
 }

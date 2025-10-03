@@ -6,31 +6,6 @@ namespace Gamey.Api.DataLayer
 {    
     public class GamerDataLayer(ILogger<GameDataLayer> _logger, IGameyDbConnection _gameyDbConnection) : IGamerDataLayer
     {
-        //public async Task<Game> Save(Game game)
-        //{
-        //    try
-        //    {
-        //        _logger.LogInformation("Gamey Game.Save() " + game.id);
-
-        //        // if new item assign id
-        //        if (game.id == null || game.id == Guid.Empty)
-        //            game.id = Guid.NewGuid();
-
-        //        ItemResponse<Game> response = await _gameyDbConnection.GameContainer.UpsertItemAsync<Game>(
-        //            item: game,
-        //            partitionKey: new PartitionKey(game.id.ToString())
-        //        );
-
-        //        return response;
-        //    }
-        //    catch (CosmosException ex)
-        //    {
-        //        var error = "Gamey Error in GameDataLayer.Save (praise id = " + game.id + ")";
-        //        _logger.LogError(ex, error);
-        //        throw new Exception(error, ex);
-        //    }
-        //}
-
         public async Task<Gamer> ReadByGamerId(Guid gamerId)
         {
             try
@@ -82,14 +57,42 @@ namespace Gamey.Api.DataLayer
 
                 FeedResponse<Gamer> dbGamers = await filteredFeed.ReadNextAsync();
 
-                if (dbGamers == null || dbGamers.Count() == 0) throw new Exception("Unable to find Games for gamerEmail: " + gamerEmail);
                 if (dbGamers.Count() > 1) throw new Exception("More than one game found for gamerEmail: " + gamerEmail);
+                if (dbGamers == null || dbGamers.Count() == 0) return null; // valid scenario checking if user exists
 
                 return dbGamers.Single();
             }
             catch (Exception ex)
             {
                 var error = "Error in GameDataLayer.Read (gamerEmail = " + gamerEmail + ")";
+                _logger.LogError(ex, error);
+                throw new Exception(error, ex);
+            }
+        }
+
+        public async Task<Gamer> Save(Gamer gamer)
+        {
+            try
+            {
+                _logger.LogInformation("Gamey Achievement.Save() " + gamer.id);
+
+                // if new item assign id
+                if (gamer == null) throw new Exception("GamerDataLayer() - gamer cannot be null");
+                if(string.IsNullOrEmpty(gamer.GamerName)) throw new Exception("GamerDataLayer() - gamer name is required");
+                if (string.IsNullOrEmpty(gamer.GamerEmail)) throw new Exception("GamerDataLayer() - gamer email is required");
+
+                if (gamer.id == null || gamer.id == Guid.Empty) gamer.id = Guid.NewGuid();
+
+                ItemResponse<Gamer> response = await _gameyDbConnection.GamerContainer.UpsertItemAsync<Gamer>(
+                    item: gamer,
+                    partitionKey: new PartitionKey(gamer.id.ToString())
+                );
+
+                return response;
+            }
+            catch (CosmosException ex)
+            {
+                var error = "Gamey Error in AchievementDataLayer.Save (achievment id = " + gamer.id + ")";
                 _logger.LogError(ex, error);
                 throw new Exception(error, ex);
             }

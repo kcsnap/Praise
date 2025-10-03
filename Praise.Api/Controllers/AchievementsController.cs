@@ -13,7 +13,7 @@ namespace Praise.Api.Controllers
         {
             try
             {
-                await _gameLogic.UpdateAchievements(_praiseUserLogic, achievementId);
+                await _gameLogic.ClaimAchievement(_praiseUserLogic, achievementId);
             }
             catch (Exception ex)
             {

@@ -33,12 +33,12 @@ namespace Praise.Api.Controllers
         {
             try
             {
-                var email = _contextAccessor.HttpContext.Request.Headers["username"];
-
-                if (string.IsNullOrEmpty(email))
+                if (string.IsNullOrEmpty(_praiseUserLogic.PraiseUser.Email))
                     throw new BadHttpRequestException("Email is mandatory");
 
-                praiseLogic.PublishSendPraiseEvent(praiseSent);
+                await praiseLogic.PublishSendPraiseEvent(praiseSent);
+
+                await gameLogic.SendPraiseEvent(_praiseUserLogic);
 
                 return praiseSent;
             }

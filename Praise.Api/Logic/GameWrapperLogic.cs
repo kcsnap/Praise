@@ -1,5 +1,6 @@
 ﻿using Gamey.Api.Models;
 using Gamey.Api.Models.Responses;
+using Gamey.Models.Converters;
 using Microsoft.Extensions.Options;
 using Praise.Api.Configuration;
 using Praise.Api.Logic.Interfaces;
@@ -13,16 +14,19 @@ namespace Praise.Api.Logic
     {
         // requires auth and specific user
         public static string _badgesUrl = "badges";
+        public static string _gameUrl = "game";
         public static string _gameEventUrl = "gameevent";
+        public static string _gamersUrl = "gamers"; // 0 = gamerEmail
         public static string _gamerUrl = "gamers/{0}"; // 0 = gamerEmail
         public static string _achievementsUrl = "gamers/{0}/achievements"; // 0 = gamerId
-        public static string _achievementsPatchUrl = "gamers/{0}/achievements/{1}"; // 0 = gamerId, 1 = achievementId
+        public static string _achievementUrl = "gamers/{0}/achievements/{1}"; // 0 = gamerId, 1 = achievementId
 
         protected HttpClient client;
         protected string bearerToken;
         protected readonly ILogger<GameWrapperLogic> _logger;
         protected readonly GameApiOptions _gameApiOptions;
 
+        protected Game _game;
         protected Gamer _gamer;
 
         public GameWrapperLogic(IOptions<GameApiOptions> gameApiOptions, ILogger<GameWrapperLogic> logger)
@@ -50,7 +54,7 @@ namespace Praise.Api.Logic
                 _logger.LogInformation("Instantiated Praise HttpClient username header for " + fromEmail);
 
                 // get gamer details on load
-                await LoadGamer(_praiseUserLogic);
+                await LoadGameAndGamer(_praiseUserLogic);
             }
             catch (Exception ex)
             {
@@ -60,21 +64,61 @@ namespace Praise.Api.Logic
             }
         }
 
-        protected async Task LoadGamer(IPraiseUserLogic _praiseUserLogic)
+        protected async Task LoadGameAndGamer(IPraiseUserLogic _praiseUserLogic)
         {
-            var path = string.Format(_gamerUrl, _praiseUserLogic.PraiseUser.Email);
-            var response = await GetAsync<Gamer>(_praiseUserLogic, path);
-            _gamer = response;
+            var gameResponse = await GetAsync<Game>(_praiseUserLogic, _gameUrl);
+            _game = gameResponse;
+
+            var gamerPath = string.Format(_gamerUrl, _praiseUserLogic.PraiseUser.Email);
+            var gamerResponse = await GetAsync<Gamer>(_praiseUserLogic, gamerPath);
+            _gamer = gamerResponse;
         }
 
+        /// <summary>
+        /// this is currenlty called everytime user logs in and reg just returns error if already registered
+        /// </summary>
+        /// <param name="_praiseUserLogic"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task RegisterGamer(IPraiseUserLogic _praiseUserLogic)
         {
             await Initialise(_praiseUserLogic);
+
+            // if gamer doesn't exist then register
+            if (_gamer == null)
+            {
+                // create the gamer
+                var newGamer = new NewGamer
+                {
+                    GamerName = string.IsNullOrEmpty(_praiseUserLogic.PraiseUser.DisplayName) ? _praiseUserLogic.PraiseUser.Email : _praiseUserLogic.PraiseUser.DisplayName,
+                    GamerEmail = _praiseUserLogic.PraiseUser.Email
+                };
+
+                // register gamer and update local ref
+                _gamer = await PostAsync<NewGamer, Gamer>(_praiseUserLogic, _gamersUrl, newGamer);
+            }
 
             // api call to GameEvent
             var response = await PostAsync<NewGameEvent, ResponseGameBadges>(_praiseUserLogic, _gameEventUrl, new NewGameEvent
             {
                 EventCode = "register-event",
+                GamerEmail = _praiseUserLogic.PraiseUser.Email
+            });
+
+            // api call to GameEvent
+            var responseLogin = await PostAsync<NewGameEvent, ResponseGameBadges>(_praiseUserLogic, _gameEventUrl, new NewGameEvent
+            {
+                EventCode = "login-event",
+                GamerEmail = _praiseUserLogic.PraiseUser.Email
+            });
+        }
+
+        public async Task SendPraiseEvent(IPraiseUserLogic _praiseUserLogic)
+        {
+            // api call to GameEvent
+            var responseSendPraise = await PostAsync<NewGameEvent, ResponseGameBadges>(_praiseUserLogic, _gameEventUrl, new NewGameEvent
+            {
+                EventCode = "send-praise-event",
                 GamerEmail = _praiseUserLogic.PraiseUser.Email
             });
         }
@@ -88,10 +132,10 @@ namespace Praise.Api.Logic
             var response = await GetAsync<IEnumerable<Achievement>>(_praiseUserLogic, path);
             return response;
         }
-        public async Task UpdateAchievements(IPraiseUserLogic _praiseUserLogic, Guid achievementId)
+        public async Task ClaimAchievement(IPraiseUserLogic _praiseUserLogic, Guid achievementId)
         {
             await Initialise(_praiseUserLogic);
-            var path = string.Format(_achievementsPatchUrl, _gamer.id, achievementId);
+            var path = string.Format(_achievementUrl, _gamer.id, achievementId);
 
             // api call to GameEvent
             await PatchAsync(_praiseUserLogic, path);
@@ -198,7 +242,7 @@ namespace Praise.Api.Logic
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNameCaseInsensitive = true,
-                                Converters = { new BadgeDetailsConverter() } // client-side converter
+                                Converters = { new BadgeDetailsConverter() }
                             };
 
                             var badges = JsonSerializer.Deserialize<S>(json, options);

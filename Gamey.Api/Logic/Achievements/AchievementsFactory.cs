@@ -3,7 +3,7 @@ using Gamey.Api.Models;
 
 namespace Gamey.Api.Logic.Achievements
 {
-    public class AchievementsFactory(ISpecialBadgeGroupLogic _specialBadgeGroupLogic) : IAchievementsFactory
+    public class AchievementsFactory(ISpecialBadgeGroupLogic _specialBadgeGroupLogic, ICountBadgeGroupLogic _countBadgeGroupLogic, IStreakBadgeGroupLogic _streakBadgeGroupLogic) : IAchievementsFactory
     {
         public IAwardsLogic Get(BadgeGroupDetails badgeGroupDetails)
         {
@@ -11,15 +11,13 @@ namespace Gamey.Api.Logic.Achievements
             {
                 case BadgeType.Special:
                     return _specialBadgeGroupLogic;
-                //case BadgeType.Count:
-                //    return new CountBadgeGroupLogic();
-                //case BadgeType.Streak:
-                //    return new StreakBadgeGroupLogic();
+                case BadgeType.Count:
+                    return _countBadgeGroupLogic;
+                case BadgeType.Streak:
+                    return _streakBadgeGroupLogic;
                 default:
                     throw new NotImplementedException("Badge type not implemented");
-
             }
         }
     }
-
 }

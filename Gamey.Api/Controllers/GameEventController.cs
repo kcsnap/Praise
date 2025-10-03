@@ -1,5 +1,4 @@
 ﻿using Gamey.Api.Interfaces;
-using Gamey.Api.Logic;
 using Gamey.Api.Models;
 using Gamey.Api.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,7 @@ namespace Gamey.Api.Controllers
 {
     [ApiController]
     [Authorize]    
-    public class GameEventController(IGameLogic _gameLogic, IGamerLogic _gamerLogic, IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic) : Controller
+    public class GameEventController(IGameLogic _gameLogic, IGamerLogic _gamerLogic, IGameEventsLogic gameEventsLogic, IBadgeLogic badgeLogic, IPrizeGroupLogic prizeLogic) : Controller
     {
         [HttpGet("gameevent")]
         public async Task<IEnumerable<GameEvent>> Get()
@@ -43,12 +42,14 @@ namespace Gamey.Api.Controllers
             var gamer = await _gamerLogic.GetGamerByEmail(newGameEvent.GamerEmail);
             if (gamer == null || !gamer.id.HasValue) throw new BadHttpRequestException("gamer not found");
 
-            // check for new badges...
+            // check for new badges and prizes...
             var badges = await badgeLogic.GetBadgesEarnedForEvent(game.id.Value, gamer.id.Value, gameEvent);
+            var prize = await prizeLogic.GetPrizeEarnedForEvent(game.id.Value, gamer.id.Value, gameEvent);
 
             return new ResponseBadges
             {
-                EarnedBadges = badges
+                EarnedBadges = badges,
+                EarnedPrize = prize
             };
         }
     }

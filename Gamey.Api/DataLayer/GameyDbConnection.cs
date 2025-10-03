@@ -15,6 +15,10 @@ namespace Gamey.Api.DataLayer
         public Container BadgeGroupContainer { get; set; }
         public Container BadgeContainer { get; set; }
         public Container GamerContainer { get; set; }
+        public Container ActionHistoryContainer { get; set; }
+        public Container GamerEventDataContainer { get; set; }
+        public Container PrizeGroupsContainer { get; set; }
+        public Container WalletContainer { get; set; }
 
         protected CosmosClient client;
         protected Database database;
@@ -39,6 +43,10 @@ namespace Gamey.Api.DataLayer
             BadgeGroupContainer = database.GetContainer("BadgeGroups");
             BadgeContainer = database.GetContainer("Badges");
             GamerContainer = database.GetContainer("Gamers");
+            ActionHistoryContainer = database.GetContainer("ActionHistory");
+            GamerEventDataContainer = database.GetContainer("GamerEventData");
+            PrizeGroupsContainer = database.GetContainer("PrizeGroups");
+            WalletContainer = database.GetContainer("Wallet");
         }
     }
 }
