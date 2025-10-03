@@ -10,6 +10,6 @@ namespace Praise.WebApp.Logic.Interfaces
         Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url, string querystringParams);
         Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url, Paging paging, string querystringParams);
         Task<T> PostAsync<T>(IPraiseUserLogic praiseUser, string url, T payload);
-        Task PatchAsync(IPraiseUserLogic praiseUser, string url);
+        Task PatchAsync(IPraiseUserLogic praiseUser, string url);        
     }
 }

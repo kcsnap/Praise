@@ -17,6 +17,12 @@
 
 @* <a href="https://auth0.com/blog/what-is-blazor-tutorial-on-building-webapp-with-authentication/#Securing-the-Application-with-Auth0">Auth0 Tutorial</a> *@
 
+
+<div>
+    <h1>Balance</h1>
+    <div>@Balance tokens</div>
+</div>
+
 <div class="line-text">
     <span>Recent Praises Sent</span>    
 </div>
@@ -166,6 +172,7 @@
     RecentActivity RecentActivity;
     private Modal modal = default!;
     private IEnumerable<BadgeGroupViewModel> BadgeGroups;
+    private int Balance = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -179,7 +186,9 @@
         {
             // at this point retrieve all achievements and display those unclaimed...
             BadgeGroups = await _badgeLogic.GetBadges(praiseUser);
+            Balance = await _badgeLogic.GetUserBalance(praiseUser);
             StateHasChanged();
+
             // var parameters = new Dictionary<string, object>();
             // parameters.Add("BadgeTitle", "Welcome Newbie");
             // await modal.ShowAsync<BadgeAwardComponent>(title: "You've earned a new Badge", parameters: parameters);

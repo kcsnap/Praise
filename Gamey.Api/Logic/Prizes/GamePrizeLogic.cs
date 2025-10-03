@@ -47,7 +47,7 @@ namespace Gamey.Api.Logic.Prizes
             if (!gamerEventData.LastEventDate.HasValue || gamerEventData.LastEventDate.Value.Date != DateTime.Now.Date)
             {
                 // update prize amount
-                await _tokenWalletLogic.SendToken(newWallet.Address, prize.PrizeAmount);
+                await _tokenWalletLogic.SendToken(gamerId, prize.PrizeAmount);
                 return prize;
             }
 

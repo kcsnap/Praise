@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Crypto_Tests.CryptoManager
 {
@@ -28,7 +31,7 @@ namespace Crypto_Tests.CryptoManager
 
             IConfiguration Configuration = builder.Build();
 
-            _privateKey = Configuration["TokenContract:PrivateKey"];
+            _privateKey = Configuration["PrivateKey"];
         }
 
         [TestInitialize]
@@ -131,6 +134,116 @@ namespace Crypto_Tests.CryptoManager
         public int HdWalletIndex { get; set; }
         public string Address { get; set; }
         public string PrivateKey { get; set; }
+
+    }
+
+    public class TokenManager
+    {
+        private readonly Web3 _web3;
+        private readonly string _tokenContractAddress;
+        private readonly int _tokenDecimals;
+        private readonly string _ownerAddress;
+        private readonly string _magicWords;
+        private readonly string _password;
+
+        // Minimal ERC20 ABI for the transfer function
+        private const string ERC20Abi = @"[
+            {
+                'constant': false,
+                'inputs': [
+                    {'name': '_to', 'type': 'address'},
+                    {'name': '_value', 'type': 'uint256'}
+                ],
+                'name': 'transfer',
+                'outputs': [{'name': '', 'type': 'bool'}],
+                'type': 'function'
+            }
+        ]";
+
+        public TokenManager(string rpcUrl, string privateKey, string tokenContractAddress, string magicWords, string password, int tokenDecimals = 18)
+        {
+            var account = new Account(privateKey);
+            _web3 = new Web3(account, rpcUrl);
+            _tokenContractAddress = tokenContractAddress;
+            _tokenDecimals = tokenDecimals;
+            _ownerAddress = account.Address;
+            _magicWords = magicWords;
+            _password = password;
+        }
+
+        public async Task<TokenWallet> CreateWallet(int walletIndex)
+        {
+            string Words = _magicWords;
+            string Password1 = _password;
+            var wallet1 = new Wallet(Words, Password1);
+
+            // TODO check wallet index doesn't exist already!
+
+            var account = wallet1.GetAccount(walletIndex);
+
+            return new TokenWallet
+            {
+                HdWalletIndex = walletIndex,
+                Address = account.Address,
+                PrivateKey = account.PrivateKey // TODO - encrypt!
+            };
+        }
+
+        public async Task<decimal> GetBalance(string walletAddress)
+        {
+            var accountAddress = walletAddress;
+
+            //need to specifiy contract address to get balance of specific Tokens
+            var contract = _web3.Eth.ERC20.GetContractService(_tokenContractAddress);
+            var tokenBalance = await contract.BalanceOfQueryAsync(accountAddress);
+
+            // Convert to token units
+            var decimals = await contract.DecimalsQueryAsync();
+            var balanceInTokens = Web3.Convert.FromWei(tokenBalance, decimals);
+
+            return balanceInTokens;
+        }
+
+        /// <summary>
+        /// Sends ERC20 tokens to a recipient address.
+        /// </summary>
+        /// <param name="recipientAddress">Recipient wallet address</param>
+        /// <param name="amount">Amount of tokens (human-readable, not smallest units)</param>
+        /// <returns>Transaction hash</returns>
+        public async Task<string> SendToken(string recipientAddress, decimal amount)
+        {
+            // Convert to smallest units
+            BigInteger amountInUnits = new BigInteger(amount * (decimal)Math.Pow(10, _tokenDecimals));
+
+            _web3.TransactionManager.UseLegacyAsDefault = true;
+
+            // Get contract and transfer function
+            var contract = _web3.Eth.GetContract(ERC20Abi, _tokenContractAddress);
+            var transferFunction = contract.GetFunction("transfer");
+
+            // Estimate gas for this token transfer
+            BigInteger estimatedGas = await transferFunction.EstimateGasAsync(_ownerAddress, null, null, recipientAddress, amountInUnits);
+
+            // Add a 10% buffer
+            BigInteger gasLimit = estimatedGas + estimatedGas / 10;
+
+            try
+            {
+                // Send transaction
+                string txHash = await transferFunction.SendTransactionAsync(from: _ownerAddress,
+                    gas: new Nethereum.Hex.HexTypes.HexBigInteger(gasLimit),
+                    value: null,
+                    functionInput: new object[] { recipientAddress, amountInUnits }  // ⚠ Pass function parameters as an array
+                );
+
+                Console.WriteLine($"Transaction sent! Hash: {txHash}");
+                return txHash;
+            }
+            catch (Nethereum.JsonRpc.Client.RpcResponseException ex)
+            {
+                throw new Exception("What's the error?", ex);
+            }
+        }
 
     }
 }

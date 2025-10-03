@@ -16,10 +16,11 @@ namespace Praise.Api.Logic
         public static string _badgesUrl = "badges";
         public static string _gameUrl = "game";
         public static string _gameEventUrl = "gameevent";
-        public static string _gamersUrl = "gamers"; // 0 = gamerEmail
+        public static string _gamersUrl = "gamers"; 
         public static string _gamerUrl = "gamers/{0}"; // 0 = gamerEmail
         public static string _achievementsUrl = "gamers/{0}/achievements"; // 0 = gamerId
         public static string _achievementUrl = "gamers/{0}/achievements/{1}"; // 0 = gamerId, 1 = achievementId
+        public static string _prizesUrl = "gamers/{0}/prizes"; // 0 = gamerId
 
         protected HttpClient client;
         protected string bearerToken;
@@ -146,6 +147,16 @@ namespace Praise.Api.Logic
             await Initialise(_praiseUserLogic);
 
             var response = await GetAsync<IEnumerable<BadgeGroupDetails>>(_praiseUserLogic, _badgesUrl);
+            return response;
+        }
+
+        public async Task<int> GetCryptoBalance(IPraiseUserLogic _praiseUserLogic)
+        {
+            await Initialise(_praiseUserLogic);
+
+            var path = string.Format(_prizesUrl, _gamer.id);
+            var response = await GetAsync<int>(_praiseUserLogic, path);
+
             return response;
         }
 

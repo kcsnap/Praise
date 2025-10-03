@@ -6,6 +6,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
 using System.Numerics;
 
 namespace Gamey.Api.Logic
@@ -16,8 +17,6 @@ namespace Gamey.Api.Logic
         {
             public int MaxHdWalletIndex { get; set; }
         }
-
-        private readonly Web3 _web3;
 
         // Minimal ERC20 ABI for the transfer function
         private const string ERC20Abi = @"[
@@ -39,9 +38,6 @@ namespace Gamey.Api.Logic
         /// <returns></returns>
         private async Task<int> GetNextAvailableIndex()
         {
-            
-            int? response;
-
             try
             {
                 // requried from ALL games as wallet index is global
@@ -76,8 +72,8 @@ namespace Gamey.Api.Logic
         public async Task<TokenWallet> GetOrCreateWallet(Guid gamerId)
         {
             // TODO check wallet index doesn't exist already!
-            var wallet = await GetTokenWalletByUserId(gamerId);
-            if (wallet != null) return wallet;
+            var tokenWallet = await GetTokenWalletByUserId(gamerId);
+            if (tokenWallet != null) return tokenWallet;
 
             // no wallet for current gamer so lets create one
             int walletIndex = await GetNextAvailableIndex();
@@ -108,13 +104,16 @@ namespace Gamey.Api.Logic
             return await tokenWalletDataLayer.Save(tokenWallet);
         }
 
-        public async Task<decimal> GetBalance(string walletAddress)
+        public async Task<decimal> GetBalance(Guid gamerId)
         {
-            var accountAddress = walletAddress;
+            var tokenWallet = await GetOrCreateWallet(gamerId);
+
+            var _web3 = new Web3(_tokenContractConfig.Value.RpcUrl);
+            _web3.TransactionManager.UseLegacyAsDefault = true;
 
             //need to specifiy contract address to get balance of specific Tokens
             var contract = _web3.Eth.ERC20.GetContractService(_tokenContractConfig.Value.TokenContractAddress);
-            var tokenBalance = await contract.BalanceOfQueryAsync(accountAddress);
+            var tokenBalance = await contract.BalanceOfQueryAsync(tokenWallet.Address);
 
             // Convert to token units
             var decimals = await contract.DecimalsQueryAsync();
@@ -129,11 +128,15 @@ namespace Gamey.Api.Logic
         /// <param name="recipientAddress">Recipient wallet address</param>
         /// <param name="amount">Amount of tokens (human-readable, not smallest units)</param>
         /// <returns>Transaction hash</returns>
-        public async Task<string> SendToken(string recipientAddress, decimal amount)
+        public async Task<string> SendToken(Guid gamerId, decimal amount)
         {
+            var recipientTokenWallet = await GetOrCreateWallet(gamerId);
+
             // Convert to smallest units
             BigInteger amountInUnits = new BigInteger(amount * (decimal)Math.Pow(10, _tokenContractConfig.Value.TokenDecimals));
 
+            var account = new Account(_tokenContractConfig.Value.PrivateKey);
+            var _web3 = new Web3(account, _tokenContractConfig.Value.RpcUrl);
             _web3.TransactionManager.UseLegacyAsDefault = true;
 
             // Get contract and transfer function
@@ -141,7 +144,7 @@ namespace Gamey.Api.Logic
             var transferFunction = contract.GetFunction("transfer");
 
             // Estimate gas for this token transfer
-            BigInteger estimatedGas = await transferFunction.EstimateGasAsync(_tokenContractConfig.Value.TokenOwnerAddress, null, null, recipientAddress, amountInUnits);
+            BigInteger estimatedGas = await transferFunction.EstimateGasAsync(_tokenContractConfig.Value.TokenOwnerAddress, null, null, recipientTokenWallet.Address, amountInUnits);
 
             // Add a 10% buffer
             BigInteger gasLimit = estimatedGas + estimatedGas / 10;
@@ -152,7 +155,7 @@ namespace Gamey.Api.Logic
                 string txHash = await transferFunction.SendTransactionAsync(from: _tokenContractConfig.Value.TokenOwnerAddress,
                     gas: new Nethereum.Hex.HexTypes.HexBigInteger(gasLimit),
                     value: null,
-                    functionInput: new object[] { recipientAddress, amountInUnits }
+                    functionInput: new object[] { recipientTokenWallet.Address, amountInUnits }
                 );
 
                 Console.WriteLine($"Transaction sent! Hash: {txHash}");

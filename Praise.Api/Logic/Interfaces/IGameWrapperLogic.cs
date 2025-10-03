@@ -10,5 +10,6 @@ namespace Praise.Api.Logic.Interfaces
         Task<IEnumerable<Achievement>> GetAchievements(IPraiseUserLogic _praiseUserLogic);
         Task<IEnumerable<BadgeGroupDetails>> GetAllBadges(IPraiseUserLogic _praiseUserLogic);
         Task ClaimAchievement(IPraiseUserLogic _praiseUserLogic, Guid achievementId);
+        Task<int> GetCryptoBalance(IPraiseUserLogic _praiseUserLogic);
     }
 }

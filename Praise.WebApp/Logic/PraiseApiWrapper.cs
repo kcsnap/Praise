@@ -69,6 +69,7 @@ namespace Praise.WebApp.Logic
         public static string PraiseUrl = "Praise";
         public static string BadgeUrl = "Badge";
         public static string AchievementsPatchUrl = "Achievements/{0}"; // 0 = achievement id
+        public static string PrizesUrl = "Prizes";
 
         public async Task<T> GetAsync<T>(IPraiseUserLogic praiseUser, string url)
         {

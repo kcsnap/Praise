@@ -1,4 +1,5 @@
-﻿using Praise.Models;
+﻿using Gamey.Api.Models;
+using Praise.Models;
 using Praise.WebApp.Logic.Interfaces;
 
 namespace Praise.WebApp.Logic
@@ -16,10 +17,15 @@ namespace Praise.WebApp.Logic
             return badges;
         }
 
-        public async Task ClaimBadge(IPraiseUserLogic praiseUser, Guid achievementId)
+        //public async Task ClaimBadge(IPraiseUserLogic praiseUser, Guid achievementId)
+        //{
+        //    var path = string.Format(PraiseApiWrapper.AchievementsPatchUrl, achievementId);
+        //    await praiseApi.PatchAsync(praiseUser, path);            
+        //}
+
+        public async Task<int> GetUserBalance(IPraiseUserLogic _praiseUserLogic)
         {
-            var path = string.Format(PraiseApiWrapper.AchievementsPatchUrl, achievementId);
-            await praiseApi.PatchAsync(praiseUser, path);            
+            return await praiseApi.GetAsync<int>(_praiseUserLogic, PraiseApiWrapper.PrizesUrl);
         }
     }
 }
