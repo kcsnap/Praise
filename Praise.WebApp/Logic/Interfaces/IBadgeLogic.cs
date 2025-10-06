@@ -5,6 +5,6 @@ namespace Praise.WebApp.Logic.Interfaces
     public interface IBadgeLogic
     {
         Task<IEnumerable<BadgeGroupViewModel>> GetBadges(IPraiseUserLogic praiseUser);
-        Task<int> GetUserBalance(IPraiseUserLogic praiseUser);
+        Task<DashboardViewModel> GetDashboardNumbers(IPraiseUserLogic praiseUser);
     }
 }

@@ -23,9 +23,9 @@ namespace Praise.WebApp.Logic
         //    await praiseApi.PatchAsync(praiseUser, path);            
         //}
 
-        public async Task<int> GetUserBalance(IPraiseUserLogic _praiseUserLogic)
+        public async Task<DashboardViewModel> GetDashboardNumbers(IPraiseUserLogic _praiseUserLogic)
         {
-            return await praiseApi.GetAsync<int>(_praiseUserLogic, PraiseApiWrapper.PrizesUrl);
+            return await praiseApi.GetAsync<DashboardViewModel>(_praiseUserLogic, PraiseApiWrapper.DashboardCountsUrl);
         }
     }
 }

@@ -17,10 +17,34 @@
 
 @* <a href="https://auth0.com/blog/what-is-blazor-tutorial-on-building-webapp-with-authentication/#Securing-the-Application-with-Auth0">Auth0 Tutorial</a> *@
 
-
-<div>
-    <h1>Balance</h1>
-    <div>@Balance tokens</div>
+<div class="dashboard-info-group row gy-3">
+    <div class="dashboard-info-item col-12 col-md-4 col-lg-4">
+        <div>
+            <img src="images/icons/cryptocurrency.png" />
+            <div class="dashboard-info-item-inner">
+                <span>@DashboardVm.Balance<span>t</span></span>
+                <h3>Balance</h3>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-info-item col-12 col-md-4 col-lg-4">
+        <div>
+            <img src="images/icons/send.png" />
+            <div class="dashboard-info-item-inner">
+                <span>@DashboardVm.Sent</span>
+                <h3>Sent</h3>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-info-item col-12 col-md-4 col-lg-4">
+        <div>
+            <img src="images/icons/receive-mail.png" />
+            <div class="dashboard-info-item-inner">
+                <span>@DashboardVm.Received</span>
+                <h3>Received</h3>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="line-text">
@@ -172,7 +196,8 @@
     RecentActivity RecentActivity;
     private Modal modal = default!;
     private IEnumerable<BadgeGroupViewModel> BadgeGroups;
-    private int Balance = -1;
+
+    private DashboardViewModel DashboardVm = new DashboardViewModel();
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,7 +211,7 @@
         {
             // at this point retrieve all achievements and display those unclaimed...
             BadgeGroups = await _badgeLogic.GetBadges(praiseUser);
-            Balance = await _badgeLogic.GetUserBalance(praiseUser);
+            DashboardVm = await _badgeLogic.GetDashboardNumbers(praiseUser);
             StateHasChanged();
 
             // var parameters = new Dictionary<string, object>();
