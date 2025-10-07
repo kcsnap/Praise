@@ -51,20 +51,31 @@ namespace Praise.WebApp.Logic
             try
             {
                 var response = Task.Run(async () => await authClient.PostAsync(url, formData)).Result;
-                var content = Task.Run(response.Content.ReadAsStringAsync).Result;
-                bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
-                _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = Task.Run(response.Content.ReadAsStringAsync).Result;
+                    bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
-                client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                client.DefaultRequestHeaders.Add("username", fromEmail);
-                _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
+                    _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
 
-                // TODO > Check against login count - this is quick and dirty solution...
-                // if no praises assume first login and raise event with gamification engine
-                _logger.LogInformation("Check first login detected for user " + _praiseUserLogic.PraiseUser.Email);
-                await PostAsync(_praiseUserLogic, GameUrl);
+                    client = new HttpClient();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                    client.DefaultRequestHeaders.Add("username", fromEmail);
+                    _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
+
+                    // TODO > Check against login count - this is quick and dirty solution...
+                    // if no praises assume first login and raise event with gamification engine
+                    _logger.LogInformation("Check first login detected for user " + _praiseUserLogic.PraiseUser.Email);
+                    await PostAsync(_praiseUserLogic, GameUrl);
+                }
+                else
+                {
+                    var content = Task.Run(response.Content.ReadAsStringAsync).Result;
+                    var msg = "Error calling " + url + " with response " + response.ReasonPhrase + " : " + content;
+                    _logger.LogError(msg);
+                    throw new Exception(msg);
+                }
             }
             catch(Exception ex)
             {
