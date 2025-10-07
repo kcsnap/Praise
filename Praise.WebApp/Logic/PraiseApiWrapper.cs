@@ -30,7 +30,9 @@ namespace Praise.WebApp.Logic
 
             // Set the request URL
             var url = _authOptions.AuthTokenUrl;
-            
+
+            _logger.LogInformation("PraiseApiWrapper.Init clientid: " + _authOptions.ClientId);
+
             // Prepare the form data
             var formData = new FormUrlEncodedContent(new[]
             {
@@ -40,22 +42,35 @@ namespace Praise.WebApp.Logic
                 new KeyValuePair<string, string>("audience", _authOptions.Audience)
             });
 
+
+            _logger.LogInformation("PraiseApiWrapper.Init built form data, send request for auth token");
+
             // Send the POST request
             var authClient = new HttpClient();
-            var response = Task.Run(async () => await authClient.PostAsync(url, formData)).Result;
-            var content = Task.Run(response.Content.ReadAsStringAsync).Result;
-            bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
-            _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
-            client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-            client.DefaultRequestHeaders.Add("username", fromEmail);
-            _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
+            try
+            {
+                var response = Task.Run(async () => await authClient.PostAsync(url, formData)).Result;
+                var content = Task.Run(response.Content.ReadAsStringAsync).Result;
+                bearerToken = JsonDocument.Parse(content).RootElement.GetProperty("access_token").GetString();
 
-            // TODO > Check against login count - this is quick and dirty solution...
-            // if no praises assume first login and raise event with gamification engine
-            _logger.LogInformation("Check first login detected for user " + _praiseUserLogic.PraiseUser.Email);
-            await PostAsync(_praiseUserLogic, GameUrl);
+                _logger.LogInformation("Instantiating HttpClient to call Praise.Api");
+
+                client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                client.DefaultRequestHeaders.Add("username", fromEmail);
+                _logger.LogInformation("Instantiated HttpClient username header with " + fromEmail);
+
+                // TODO > Check against login count - this is quick and dirty solution...
+                // if no praises assume first login and raise event with gamification engine
+                _logger.LogInformation("Check first login detected for user " + _praiseUserLogic.PraiseUser.Email);
+                await PostAsync(_praiseUserLogic, GameUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("PraiseApiWrapper.Init error: " + _authOptions.ClientId);
+                throw new Exception("PraiseApiWrapper.Init error: " + _authOptions.ClientId, ex);
+            }
         }
 
         private readonly string BasePraiseUrl;
