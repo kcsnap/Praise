@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_Praise_WebApp_name": {
+      "value": "Praise-WebApp-Prod"
+    },
+    "sites_Praise_Api_name": {
+      "value": "Praise-Api-Prod"
+    },
+    "keyVaultName": {
+      "value": "Praise-Vault-Prod"
+    },
+    "cosmosDbName": {
+      "value": "praise-cosmos-prod"
+    }
+  }
+}

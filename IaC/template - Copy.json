@@ -1,0 +1,1881 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_Praise_Api_Test_name": {
+            "defaultValue": "Praise-Api-Prod",
+            "type": "String"
+        },
+        "sites_Praise_WebApp_Test_name": {
+            "defaultValue": "Praise-WebApp-Prod",
+            "type": "String"
+        },
+      "vaults_praise_vault_test_name": {
+        "defaultValue": "praise-vault-prod",
+        "type": "String"
+      },
+        "virtualNetworks_Praise_CosmosVPN_name": {
+            "defaultValue": "Praise_CosmosVPN",
+            "type": "String"
+        },
+      "serverfarms_Praise_AppServicePlan_Test_name": {
+        "defaultValue": "Praise-AppServicePlan-Prod",
+        "type": "String"
+      },
+      "components_Praise_AppInsights_Test_name": {
+        "defaultValue": "Praise-AppInsights-Prod",
+        "type": "String"
+      },
+      "databaseAccounts_praise_cosmos_test_name": {
+        "defaultValue": "praise-cosmos-prod",
+        "type": "String"
+      },
+      "smartdetectoralertrules_failure_anomalies___praise_appinsights_test_name": {
+        "defaultValue": "failure anomalies - praise-appinsights-prod",
+        "type": "String"
+      },
+        "actiongroups_application_insights_smart_detection_externalid": {
+            "defaultValue": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/kenbot-rg/providers/microsoft.insights/actiongroups/application insights smart detection",
+            "type": "String"
+        },
+        "workspaces_DefaultWorkspace_66673944_b353_4256_b71c_0cd8751c81c0_SUK_externalid": {
+            "defaultValue": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/DefaultResourceGroup-SUK/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-66673944-b353-4256-b71c-0cd8751c81c0-SUK",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('components_Praise_AppInsights_Test_name')]",
+            "location": "uksouth",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaAIExtensionEnablementBlade",
+                "RetentionInDays": 90,
+                "WorkspaceResourceId": "[parameters('workspaces_DefaultWorkspace_66673944_b353_4256_b71c_0cd8751c81c0_SUK_externalid')]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[parameters('vaults_praise_vault_test_name')]",
+            "location": "uksouth",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "1050cbd2-0180-4952-a484-593e0728632c",
+                "networkAcls": {
+                    "bypass": "None",
+                    "defaultAction": "Allow",
+                    "ipRules": [],
+                    "virtualNetworkRules": []
+                },
+                "accessPolicies": [],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": true,
+                "vaultUri": "[concat('https://', parameters('vaults_praise_vault_test_name'), '.vault.azure.net/')]",
+                "provisioningState": "Succeeded",
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('virtualNetworks_Praise_CosmosVPN_name')]",
+            "location": "ukwest",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.1.0.0/16"
+                    ]
+                },
+                "privateEndpointVNetPolicies": "Disabled",
+                "dhcpOptions": {
+                    "dnsServers": []
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_Praise_CosmosVPN_name'), 'default')]",
+                        "properties": {
+                            "addressPrefix": "10.1.0.0/24",
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.AzureCosmosDB",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                }
+                            ],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2024-11-01",
+            "name": "[parameters('serverfarms_Praise_AppServicePlan_Test_name')]",
+            "location": "UK South",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 0
+            },
+            "kind": "app",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false,
+                "asyncScalingEnabled": false
+            }
+        },
+        {
+            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___praise_appinsights_test_name')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
+                "state": "Enabled",
+                "severity": "Sev3",
+                "frequency": "PT1M",
+                "detector": {
+                    "id": "FailureAnomaliesDetector"
+                },
+                "scope": [
+                    "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+                ],
+                "actionGroups": {
+                    "groupIds": [
+                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[parameters('databaseAccounts_praise_cosmos_test_name')]",
+            "location": "UK West",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_Praise_CosmosVPN_name'), 'default')]"
+            ],
+            "tags": {
+                "defaultExperience": "Core (SQL)",
+                "hidden-workload-type": "Development/Testing",
+                "hidden-cosmos-mmspecial": ""
+            },
+            "kind": "GlobalDocumentDB",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "enableAutomaticFailover": true,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": true,
+                "virtualNetworkRules": [
+                    {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_Praise_CosmosVPN_name'), 'default')]",
+                        "ignoreMissingVNetServiceEndpoint": false
+                    }
+                ],
+                "disableKeyBasedMetadataWriteAccess": false,
+                "enableFreeTier": false,
+                "enableAnalyticalStorage": false,
+                "analyticalStorageConfiguration": {
+                    "schemaType": "WellDefined"
+                },
+                "databaseAccountOfferType": "Standard",
+                "enableMaterializedViews": false,
+                "capacityMode": "Serverless",
+                "defaultIdentity": "FirstPartyIdentity",
+                "networkAclBypass": "None",
+                "disableLocalAuth": false,
+                "enablePartitionMerge": false,
+                "enablePerRegionPerPartitionAutoscale": false,
+                "enableBurstCapacity": false,
+                "enablePriorityBasedExecution": false,
+                "defaultPriorityLevel": "High",
+                "minimalTlsVersion": "Tls12",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "UK West",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": false
+                    }
+                ],
+                "cors": [],
+                "capabilities": [],
+                "ipRules": [
+                    {
+                        "ipAddressOrRange": "0.0.0.0"
+                    },
+                    {
+                        "ipAddressOrRange": "86.62.30.237"
+                    },
+                    {
+                        "ipAddressOrRange": "92.118.60.186"
+                    },
+                    {
+                        "ipAddressOrRange": "4.210.172.107"
+                    },
+                    {
+                        "ipAddressOrRange": "13.88.56.148"
+                    },
+                    {
+                        "ipAddressOrRange": "13.91.105.215"
+                    },
+                    {
+                        "ipAddressOrRange": "40.91.218.243"
+                    }
+                ],
+                "backupPolicy": {
+                    "type": "Periodic",
+                    "periodicModeProperties": {
+                        "backupIntervalInMinutes": 240,
+                        "backupRetentionIntervalInHours": 8,
+                        "backupStorageRedundancy": "Local"
+                    }
+                },
+                "networkAclBypassResourceIds": [],
+                "diagnosticLogSettings": {
+                    "enableFullTextQuery": "None"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/cassandraRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000003')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Cassandra Built-in Data Reader",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/containers/executeQuery",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/containers/readChangeFeed",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/containers/entities/read"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/cassandraRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000004')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Cassandra Built-in Data Contributor",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/write",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/*",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/write",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/delete",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/containers/*",
+                            "Microsoft.DocumentDB/databaseAccounts/cassandra/containers/entities/*"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/gremlinRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000003')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Gremlin Built-in Data Reader",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/containers/executeQuery",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/containers/readChangeFeed",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/containers/entities/read"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/gremlinRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000004')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Gremlin Built-in Data Contributor",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/write",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/*",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/write",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/delete",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/containers/*",
+                            "Microsoft.DocumentDB/databaseAccounts/gremlin/containers/entities/*"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/mongoMIRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000003')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Mongo Built-in Data Reader",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/containers/executeQuery",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/containers/readChangeFeed",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/containers/entities/read"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/mongoMIRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000004')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Mongo Built-in Data Contributor",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/read",
+                            "Microsoft.DocumentDB/databaseAccounts/throughputSettings/write",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/*",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/write",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/delete",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/containers/*",
+                            "Microsoft.DocumentDB/databaseAccounts/mongoMI/containers/entities/*"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/Praise')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "Praise"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Built-in Data Reader",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/executeQuery",
+                            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/readChangeFeed",
+                            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Built-in Data Contributor",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*",
+                            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/tableRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Built-in Data Reader",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/containers/executeQuery",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/containers/readChangeFeed",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/containers/entities/read"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/tableRoleDefinitions",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/00000000-0000-0000-0000-000000000002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "roleName": "Cosmos DB Built-in Data Contributor",
+                "type": "BuiltInRole",
+                "assignableScopes": [
+                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+                ],
+                "permissions": [
+                    {
+                        "dataActions": [
+                            "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/*",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/containers/*",
+                            "Microsoft.DocumentDB/databaseAccounts/tables/containers/entities/*"
+                        ],
+                        "notDataActions": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/degradationindependencyduration')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationindependencyduration",
+                    "DisplayName": "Degradation in dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/degradationinserverresponsetime')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationinserverresponsetime",
+                    "DisplayName": "Degradation in server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/digestMailConfiguration')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "digestMailConfiguration",
+                    "DisplayName": "Digest Mail Configuration",
+                    "Description": "This rule describes the digest mail preferences",
+                    "HelpUrl": "www.homail.com",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_billingdatavolumedailyspikeextension')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_billingdatavolumedailyspikeextension",
+                    "DisplayName": "Abnormal rise in daily data volume (preview)",
+                    "Description": "This detection rule automatically analyzes the billing data generated by your application, and can warn you about an unusual increase in your application's billing costs",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/billing-data-volume-daily-spike.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_canaryextension')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_canaryextension",
+                    "DisplayName": "Canary extension",
+                    "Description": "Canary extension",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_exceptionchangeextension')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_exceptionchangeextension",
+                    "DisplayName": "Abnormal rise in exception volume (preview)",
+                    "Description": "This detection rule automatically analyzes the exceptions thrown in your application, and can warn you about unusual patterns in your exception telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/abnormal-rise-in-exception-volume.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_memoryleakextension')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_memoryleakextension",
+                    "DisplayName": "Potential memory leak detected (preview)",
+                    "Description": "This detection rule automatically analyzes the memory consumption of each process in your application, and can warn you about potential memory leaks or increased memory consumption.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/memory-leak.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_securityextensionspackage')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_securityextensionspackage",
+                    "DisplayName": "Potential security issue detected (preview)",
+                    "Description": "This detection rule automatically analyzes the telemetry generated by your application and detects potential security issues.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/application-security-detection-pack.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/extension_traceseveritydetector')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_traceseveritydetector",
+                    "DisplayName": "Degradation in trace severity ratio (preview)",
+                    "Description": "This detection rule automatically analyzes the trace logs emitted from your application, and can warn you about unusual patterns in the severity of your trace telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/degradation-in-trace-severity-ratio.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/longdependencyduration')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "longdependencyduration",
+                    "DisplayName": "Long dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/migrationToAlertRulesCompleted')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "migrationToAlertRulesCompleted",
+                    "DisplayName": "Migration To Alert Rules Completed",
+                    "Description": "A configuration that controls the migration state of Smart Detection to Smart Alerts",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": false,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": false,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/slowpageloadtime')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowpageloadtime",
+                    "DisplayName": "Slow page load time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_Praise_AppInsights_Test_name'), '/slowserverresponsetime')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_Praise_AppInsights_Test_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowserverresponsetime",
+                    "DisplayName": "Slow server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Authorisation--Audience')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Authorisation--AuthTokenUrl')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Authorisation--ClientId')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Authorisation--ClientSecret')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Authorisation--Domain')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Database--ConnectionString')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Database--PrimaryKey')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/Email--ApiKey')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/GameApi--ApiKey')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/GameApi--ClientId')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_praise_vault_test_name'), '/TestValue')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_praise_vault_test_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('virtualNetworks_Praise_CosmosVPN_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Praise_CosmosVPN_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.1.0.0/24",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.AzureCosmosDB",
+                        "locations": [
+                            "*"
+                        ]
+                    }
+                ],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2024-11-01",
+            "name": "[parameters('sites_Praise_Api_Test_name')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_Praise_AppServicePlan_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "kind": "app",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "praise-api-prod-f5e2c5dccwf0gzg4.uksouth-01.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                  {
+                    "name": "praise-api-prod-f5e2c5dccwf0gzg4.scm.uksouth-01.azurewebsites.net",
+                    "sslState": "Disabled",
+                    "hostType": "Repository"
+                  }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_Praise_AppServicePlan_Test_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "dnsConfiguration": {},
+                "outboundVnetRouting": {
+                    "allTraffic": false,
+                    "applicationTraffic": false,
+                    "contentShareTraffic": false,
+                    "imagePullTraffic": false,
+                    "backupRestoreTraffic": false
+                },
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 1
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": true,
+                "clientAffinityProxyEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "ipMode": "IPv4",
+                "customDomainVerificationId": "FB3A6E43BC75E597C6E09ECF8FBB702792A3F55EBDAD927734B8D2A14B5CFBA4",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "endToEndEncryptionEnabled": false,
+                "redundancyMode": "None",
+                "publicNetworkAccess": "Enabled",
+                "storageAccountRequired": false,
+                "keyVaultReferenceIdentity": "SystemAssigned",
+                "autoGeneratedDomainNameLabelScope": "TenantReuse"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2024-11-01",
+            "name": "[parameters('sites_Praise_WebApp_Test_name')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_Praise_AppServicePlan_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "kind": "app",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "praise-webapp-prod-aje8d7gpfzdwgxca.uksouth-01.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "praise-webapp-prod-aje8d7gpfzdwgxca.scm.uksouth-01.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_Praise_AppServicePlan_Test_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "dnsConfiguration": {},
+                "outboundVnetRouting": {
+                    "allTraffic": false,
+                    "applicationTraffic": false,
+                    "contentShareTraffic": false,
+                    "imagePullTraffic": false,
+                    "backupRestoreTraffic": false
+                },
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 1
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": true,
+                "clientAffinityProxyEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "ipMode": "IPv4",
+                "customDomainVerificationId": "FB3A6E43BC75E597C6E09ECF8FBB702792A3F55EBDAD927734B8D2A14B5CFBA4",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "endToEndEncryptionEnabled": false,
+                "redundancyMode": "None",
+                "publicNetworkAccess": "Enabled",
+                "storageAccountRequired": false,
+                "keyVaultReferenceIdentity": "SystemAssigned",
+                "autoGeneratedDomainNameLabelScope": "TenantReuse"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/ftp')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "allow": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/ftp')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "allow": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/scm')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "allow": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/scm')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "allow": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/web')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v9.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2022",
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": true,
+                "publishingUsername": "REDACTED",
+                "scmType": "VSTSRM",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetRouteAllEnabled": false,
+                "vnetPrivatePortsCount": 0,
+                "publicNetworkAccess": "Enabled",
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 79934,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "elasticWebAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 1,
+                "azureStorageAccounts": {},
+                "http20ProxyFlag": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/web')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/RG-Praise-Prod/providers/microsoft.insights/components/Praise-AppInsights-Test"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v9.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2022",
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "REDACTED",
+                "scmType": "VSTSRM",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetRouteAllEnabled": false,
+                "vnetPrivatePortsCount": 0,
+                "publicNetworkAccess": "Enabled",
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 79913,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "elasticWebAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 1,
+                "azureStorageAccounts": {},
+                "http20ProxyFlag": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/08b6c61572294e75b4c5ded3b9ab7678')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"b8bcde8e44a965a8cab39b0dea405781415833a5\",\"buildId\":\"3845\",\"buildNumber\":\"20250917.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-17T13:29:33.6826991Z",
+                "end_time": "2025-09-17T13:29:33.9639562Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/16b0a74788cc43e790031050746c6d6d')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"4a00ba9c0770a40d2aee0e38e55625c642c71e18\",\"buildId\":\"3855\",\"buildNumber\":\"20251007.3\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-07T18:09:43.8087795Z",
+                "end_time": "2025-10-07T18:09:43.949411Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/17e52000ff8e4c5d9fa5d0893c42dd07')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"fd9e38c82efa7f6438f89e48c96373f9944d99cd\",\"buildId\":\"3856\",\"buildNumber\":\"20251007.4\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-07T18:27:16.9146444Z",
+                "end_time": "2025-10-07T18:27:17.0865277Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/1a2466f205f942f2b2a9db460c6acfc0')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"0e298d7031b2f61b33d2cb053e6ae3bda6373980\",\"buildId\":\"3850\",\"buildNumber\":\"20251003.2\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T15:43:19.4861914Z",
+                "end_time": "2025-10-03T15:43:19.6580673Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/3e9bed2a23ea43e4a2f36749a24c87cb')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"3f6fe81705f3be1beb9edf2f6b1063c119a87905\",\"buildId\":\"3847\",\"buildNumber\":\"20250930.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-30T10:13:43.8262854Z",
+                "end_time": "2025-09-30T10:13:44.0762977Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/5c021c0cc0024c5282ea9391464990f3')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"bc42b2e9755e868d67fe922544127a8e02a4a0f5\",\"buildId\":\"3851\",\"buildNumber\":\"20251003.3\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T16:54:44.9019227Z",
+                "end_time": "2025-10-03T16:54:45.0425434Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/6d0f9c8db49441538674ca343041a367')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"3f6fe81705f3be1beb9edf2f6b1063c119a87905\",\"buildId\":\"3847\",\"buildNumber\":\"20250930.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-30T10:11:52.8642169Z",
+                "end_time": "2025-09-30T10:11:53.2548426Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/80c86bb462df474ea1cf065246372b26')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"b8bcde8e44a965a8cab39b0dea405781415833a5\",\"buildId\":\"3845\",\"buildNumber\":\"20250917.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-17T13:28:33.5401842Z",
+                "end_time": "2025-09-17T13:28:33.8058097Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/854f2a6bb89542b98c4faaa2a59548f9')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"4a00ba9c0770a40d2aee0e38e55625c642c71e18\",\"buildId\":\"3855\",\"buildNumber\":\"20251007.3\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-07T18:08:23.2545405Z",
+                "end_time": "2025-10-07T18:08:23.5045395Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/98f469fe72e84fb38aba78bb37250acd')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"fee60a37524ad6e5d17ea30ea273fa48e249817f\",\"buildId\":\"3848\",\"buildNumber\":\"20250930.2\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-30T18:38:28.4567409Z",
+                "end_time": "2025-09-30T18:38:28.8004932Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/9f151e87a35342e8a318205269d2280e')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"fee60a37524ad6e5d17ea30ea273fa48e249817f\",\"buildId\":\"3848\",\"buildNumber\":\"20250930.2\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-30T18:40:03.5777666Z",
+                "end_time": "2025-09-30T18:40:03.7340143Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/9f8807b418984ec68174bdd7e34fea0a')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"bef90ca850a12fe58634ff112c2438361fcb0996\",\"buildId\":\"3849\",\"buildNumber\":\"20251003.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T12:06:12.8763914Z",
+                "end_time": "2025-10-03T12:06:13.0795307Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/a2f1b7aef3ab496fb59b926e70327c44')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"2987eb9d60fea6fddaa81eb16c94faa37cb24aa0\",\"buildId\":\"3846\",\"buildNumber\":\"20250926.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-26T06:23:40.7172382Z",
+                "end_time": "2025-09-26T06:23:41.0141181Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/b7993f2372484e20a8c71f8e4ffd619b')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"2987eb9d60fea6fddaa81eb16c94faa37cb24aa0\",\"buildId\":\"3846\",\"buildNumber\":\"20250926.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-09-26T06:22:21.1307913Z",
+                "end_time": "2025-09-26T06:22:21.5995403Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/d82b88c488a447ba8617422cd055674a')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"bc42b2e9755e868d67fe922544127a8e02a4a0f5\",\"buildId\":\"3851\",\"buildNumber\":\"20251003.3\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T16:53:45.6002925Z",
+                "end_time": "2025-10-03T16:53:45.8815366Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/d994dc0791c248e8bd285ca8520450c4')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"0e298d7031b2f61b33d2cb053e6ae3bda6373980\",\"buildId\":\"3850\",\"buildNumber\":\"20251003.2\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T15:41:15.4481758Z",
+                "end_time": "2025-10-03T15:41:15.7919234Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/e1909331235444c19496cdab812fe21a')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"d684c52cb6840516f13cc75092ad00bdff56449b\",\"buildId\":\"3852\",\"buildNumber\":\"20251006.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-06T17:46:03.9939151Z",
+                "end_time": "2025-10-06T17:46:04.3848581Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/f11abf4261f346c0b00f119e193ab1ca')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"bef90ca850a12fe58634ff112c2438361fcb0996\",\"buildId\":\"3849\",\"buildNumber\":\"20251003.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-03T12:03:33.9938162Z",
+                "end_time": "2025-10-03T12:03:34.3531915Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/fa332c0b8c874e63b668bb049d7c675d')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"d684c52cb6840516f13cc75092ad00bdff56449b\",\"buildId\":\"3852\",\"buildNumber\":\"20251006.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-06T17:47:10.4256906Z",
+                "end_time": "2025-10-06T17:47:10.6444505Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/fd4ffa41b0df4956a8570c6c6ad5189d')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"fd9e38c82efa7f6438f89e48c96373f9944d99cd\",\"buildId\":\"3856\",\"buildNumber\":\"20251007.4\",\"repoProvider\":\"GitHub\",\"repoName\":\"kcsnap/Praise\",\"collectionUrl\":\"https://dev.azure.com/snapwiresoftware/\",\"teamProject\":\"89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"buildProjectUrl\":\"https://dev.azure.com/snapwiresoftware/89054f93-ced0-4aca-8fc2-45fb10c2970c\",\"repositoryUrl\":\"https://github.com/kcsnap/Praise\",\"branch\":\"master\",\"teamProjectName\":\"PraiseApp\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-07T18:25:30.1292887Z",
+                "end_time": "2025-10-07T18:25:30.3792889Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_Api_Test_name'), '/', parameters('sites_Praise_Api_Test_name'), '-f5e2c5dccwf0gzg4.uksouth-01.azurewebsites.net')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_Api_Test_name'))]"
+            ],
+            "properties": {
+                "siteName": "Praise-Api-Prod",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_Praise_WebApp_Test_name'), '/', parameters('sites_Praise_WebApp_Test_name'), '-aje8d7gpfzdwgxca.uksouth-01.azurewebsites.net')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_Praise_WebApp_Test_name'))]"
+            ],
+          "properties": {
+            "siteName": "Praise-WebApp-Prod",
+            "hostNameType": "Verified"
+          }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('databaseAccounts_praise_cosmos_test_name'), '/Praise/PraiseContainer')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_praise_cosmos_test_name'), 'Praise')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_praise_cosmos_test_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "PraiseContainer",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
+                    "partitionKey": {
+                        "paths": [
+                            "/id"
+                        ],
+                        "kind": "Hash",
+                        "version": 2
+                    },
+                    "uniqueKeyPolicy": {
+                        "uniqueKeys": []
+                    },
+                    "conflictResolutionPolicy": {
+                        "mode": "LastWriterWins",
+                        "conflictResolutionPath": "/_ts"
+                    },
+                    "fullTextPolicy": {
+                        "defaultLanguage": "en-US",
+                        "fullTextPaths": []
+                    },
+                    "computedProperties": []
+                }
+            }
+        }
+    ]
+}

@@ -169,20 +169,6 @@ a.navbar-brand:hover {
 .navbar-brand.navbar-green > span {
     color: #00423A;
 }
-.hero-container {
-    background-color: #107878;
-    margin:auto;
-}
-.hero-container-inner {
-    width: 1170px;
-    display: block;
-    margin: auto;
-}
-    .hero-container a {
-        position:relative;
-        top:-120px;
-        left:20px;
-    }
 .nav-link {
     color: #781010;
     text-decoration: none;
@@ -286,3 +272,49 @@ a.navbar-brand:hover {
 .dashboard-info-item-inner {
     clear:both;
 }
+
+.hero-container {
+    background-color: #107878;
+    margin: auto;
+}
+
+.hero-container-inner {
+    position:relative;
+}
+
+.hero-container-inner-inner {
+    width: 1170px;
+    margin: auto;
+    display: block;
+}
+    .hero-container-inner-caption {
+        width: 550px;
+        bottom: 60px;
+        padding-left:20px;
+        display: block;
+        margin: auto;
+        position:absolute;
+    }
+@media (max-width: 600px) {
+    .hero-container-inner-caption {
+        width: 360px;
+        font-size: 12px;
+    }
+}
+        .hero-container-inner-caption span {
+            display: block;
+        }
+
+    .hero-container-inner a {
+        display: inline-block;
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .hero-message {
+        color: white;
+        font-size: 20pt;
+        font-weight: bold;
+        line-height: 24pt;
+    }

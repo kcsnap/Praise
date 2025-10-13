@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_Praise_Api_Test_name": {
+      "value": "Praise-Api-Test"      
+    },
+    "sites_Praise_WebApp_Test_name": {
+      "value": "Praise-WebApp-Test"
+    },
+    "vaults_praise_vault_test_name": {
+      "value": "praise-vault-test"
+    },
+    "virtualNetworks_Praise_CosmosVPN_name": {
+      "value": "Praise_CosmosVPN"
+    },
+    "serverfarms_Praise_AppServicePlan_Test_name": {
+      "value": "Praise-AppServicePlan-Test"
+    },
+    "components_Praise_AppInsights_Test_name": {
+      "value": "Praise-AppInsights-Test"
+    },
+    "databaseAccounts_praise_cosmos_test_name": {
+      "value": "praise-cosmos-test"
+    },
+    "smartdetectoralertrules_failure_anomalies___praise_appinsights_test_name": {
+      "value": "failure anomalies - praise-appinsights-test"
+    },
+    "actiongroups_application_insights_smart_detection_externalid": {
+      "value": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/kenbot-rg/providers/microsoft.insights/actiongroups/application insights smart detection"
+    },
+    "workspaces_DefaultWorkspace_66673944_b353_4256_b71c_0cd8751c81c0_SUK_externalid": {
+      "value": "/subscriptions/66673944-b353-4256-b71c-0cd8751c81c0/resourceGroups/DefaultResourceGroup-SUK/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-66673944-b353-4256-b71c-0cd8751c81c0-SUK"
+    }
+  }
+}

@@ -31,6 +31,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto_Tests.CryptoManager"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gamey.Models", "Gamey.Models\Gamey.Models.csproj", "{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IaC", "IaC", "{48DF9D6E-4FDA-4243-B4D1-CCC52D9293A3}"
+	ProjectSection(SolutionItems) = preProject
+		README-IaC.txt = README-IaC.txt
+		IaC\prod.parameters.json = IaC\prod.parameters.json
+		IaC\template.json = IaC\template.json
+		IaC\test.parameters.json = IaC\test.parameters.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
