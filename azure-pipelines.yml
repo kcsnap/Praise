@@ -4,7 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+      - master
 
 pool:
   vmImage: windows-latest
@@ -12,69 +15,111 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
-steps:
-- task: UseDotNet@2 #This is needed until windows-latest hosted agent will support .net 9
-  displayName: 'Install .Net9 (currently not included in latest)'
-  inputs:
-    packageType: 'sdk'
-    version: '9.0.100'
-    performMultiLevelLookup: true
-    installationPath: '$(Agent.ToolsDirectory)/dotnet'
+# create a stage to build and test the latest version of the 
+# checked in solution
+stages:
+- stage: 'BuildAndTestStage'  # id of the stage
+  displayName: 'Build and Test' # human readable name for the stage
+  jobs: # collection of jobs within this stage
+    - job: 'InstallDotNet9'
+      steps:
+      - task: UseDotNet@2 #This is needed until windows-latest hosted agent will support .net 9
+        displayName: 'Install .Net9 (currently not included in latest)'
+        inputs:
+          packageType: 'sdk'
+          version: '9.0.100'
+          performMultiLevelLookup: true
+          installationPath: '$(Agent.ToolsDirectory)/dotnet'
 
-##############################################################
-# Publish Web
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish Praise.WebApp $(buildConfiguration)'
-  inputs:
-    command: 'publish'
-    projects: '*/Praise.WebApp.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishwebapp'
-    zipAfterPublish: true
-    publishWebProjects: false
+      ##############################################################
+      # Publish Web
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish Praise.WebApp $(buildConfiguration)'
+        inputs:
+          command: 'publish'
+          projects: '*/Praise.WebApp.csproj'
+          arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishwebapp'
+          zipAfterPublish: true
+          publishWebProjects: false
 
-- task: AzureWebApp@1
-  displayName: 'Deploy to Azure WebApp'
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    appType: 'webApp'
-    appName: 'Praise-WebApp-Test'
-    package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure WebApp'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Praise-WebApp-Test'
+          package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
 
-##############################################################
-# Publish Api
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish Praise.Api $(buildConfiguration)'
-  inputs:
-    command: 'publish'
-    projects: '*/Praise.Api.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishapi'
-    zipAfterPublish: true
-    publishWebProjects: false
+      ##############################################################
+      # Publish Api
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish Praise.Api $(buildConfiguration)'
+        inputs:
+          command: 'publish'
+          projects: '*/Praise.Api.csproj'
+          arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishapi'
+          zipAfterPublish: true
+          publishWebProjects: false
 
-- task: AzureWebApp@1
-  displayName: 'Deploy to Azure Api'
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    appType: 'webApp'
-    appName: 'Praise-Api-Test'
-    package: '$(Build.ArtifactStagingDirectory)/publishapi/Praise.Api.zip'
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure Api'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Praise-Api-Test'
+          package: '$(Build.ArtifactStagingDirectory)/publishapi/Praise.Api.zip'
 
-##############################################################
-# Publish Gamey
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish Gamey.Api $(buildConfiguration)'
-  inputs:
-    command: 'publish'
-    projects: '*/Gamey.Api.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishgamey'
-    zipAfterPublish: true
-    publishWebProjects: false
+      ##############################################################
+      # Publish Gamey
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish Gamey.Api $(buildConfiguration)'
+        inputs:
+          command: 'publish'
+          projects: '*/Gamey.Api.csproj'
+          arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishgamey'
+          zipAfterPublish: true
+          publishWebProjects: false
 
-- task: AzureWebApp@1
-  displayName: 'Deploy to Azure Gamey'
-  inputs:
-    azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-    appType: 'webApp'
-    appName: 'Gamey-WebApp-Test'
-    package: '$(Build.ArtifactStagingDirectory)/publishgamey/Gamey.Api.zip'
-    
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure Gamey'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Gamey-WebApp-Test'
+          package: '$(Build.ArtifactStagingDirectory)/publishgamey/Gamey.Api.zip'
+
+- stage: 'PublishToProdStage'  # id of the stage
+  displayName: 'Publish to PROD' # human readable name for the stage
+  jobs: # collection of jobs within this stage
+    - job: 'PublishToProdJob'
+      steps:
+
+      ##############################################################
+      # Publish Web
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure WebApp'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Praise-WebApp-Prod'
+          package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
+
+      ##############################################################
+      # Publish Api
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure Api'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Praise-Api-Prod'
+          package: '$(Build.ArtifactStagingDirectory)/publishapi/Praise.Api.zip'
+
+      ##############################################################
+      # Publish Gamey
+      - task: AzureWebApp@1
+        displayName: 'Deploy to Azure Gamey'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+          appType: 'webApp'
+          appName: 'Gamey-WebApp-Prod'
+          package: '$(Build.ArtifactStagingDirectory)/publishgamey/Gamey.Api.zip'
