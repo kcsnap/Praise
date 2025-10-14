@@ -31,8 +31,6 @@ stages:
           performMultiLevelLookup: true
           installationPath: '$(Agent.ToolsDirectory)/dotnet'
 
-      ##############################################################
-      # Publish Web
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish Praise.WebApp $(buildConfiguration)'
         inputs:
@@ -41,17 +39,6 @@ stages:
           arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishwebapp'
           zipAfterPublish: true
           publishWebProjects: false
-
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure WebApp'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Praise-WebApp-Test'
-          package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
-
-      ##############################################################
-      # Publish Api
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish Praise.Api $(buildConfiguration)'
         inputs:
@@ -60,17 +47,7 @@ stages:
           arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishapi'
           zipAfterPublish: true
           publishWebProjects: false
-
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure Api'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Praise-Api-Test'
-          package: '$(Build.ArtifactStagingDirectory)/publishapi/Praise.Api.zip'
-
-      ##############################################################
-      # Publish Gamey
+          
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish Gamey.Api $(buildConfiguration)'
         inputs:
@@ -80,46 +57,101 @@ stages:
           zipAfterPublish: true
           publishWebProjects: false
 
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure Gamey'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Gamey-WebApp-Test'
-          package: '$(Build.ArtifactStagingDirectory)/publishgamey/Gamey.Api.zip'
+      # Publish build artifacts to Azure Pipelines or a Windows file share.
+      - task: PublishBuildArtifacts@1
+          
+- stage: 'PublishToTestStage'
+  displayName: 'Publish to Test' 
+  jobs:
+  - deployment: 'PublishToTestDeployment'
+    environment: 'praise-test'
+    strategy:
+        runOnce: 
+          deploy:
+            steps:
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Downloading Artifacts for Test'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.DefaultWorkingDirectory)'
+                #NOT FOUND HERE  D:\a\1\a\publishwebapp\Praise.WebApp.zip
 
-- stage: 'PublishToProdStage'  # id of the stage
-  displayName: 'Publish to PROD' # human readable name for the stage
-  jobs: # collection of jobs within this stage
-    - job: 'PublishToProdJob'
-      steps:
+            ##############################################################
+            # Publish Web
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure WebApp'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Praise-WebApp-Test'
+                package: '**/drop/publishwebapp/Praise.WebApp.zip'
 
-      ##############################################################
-      # Publish Web
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure WebApp'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Praise-WebApp-Prod'
-          package: '$(Build.ArtifactStagingDirectory)/publishwebapp/Praise.WebApp.zip'
+            ##############################################################
+            # Publish Api
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure Api'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Praise-Api-Test'
+                package: '**/drop/publishapi/Praise.Api.zip'
 
-      ##############################################################
-      # Publish Api
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure Api'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Praise-Api-Prod'
-          package: '$(Build.ArtifactStagingDirectory)/publishapi/Praise.Api.zip'
+            ##############################################################
+            # Publish Gamey
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure Gamey'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Gamey-WebApp-Test'
+                package: '**/drop/publishgamey/Gamey.Api.zip'
 
-      ##############################################################
-      # Publish Gamey
-      - task: AzureWebApp@1
-        displayName: 'Deploy to Azure Gamey'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
-          appType: 'webApp'
-          appName: 'Gamey-WebApp-Prod'
-          package: '$(Build.ArtifactStagingDirectory)/publishgamey/Gamey.Api.zip'
+- stage: 'PublishToProductionStage'
+  displayName: 'Publish to Production' 
+  jobs:
+  - deployment: 'PublishToProductionDeployment'
+    environment: 'praise-prod'
+    strategy:
+        runOnce: 
+          deploy:
+            steps:
+
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Downloading Artifacts for Prod'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.DefaultWorkingDirectory)'
+
+            ##############################################################
+            # Publish Web
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure WebApp'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Praise-WebApp-Prod'
+                package: '**/drop/publishwebapp/Praise.WebApp.zip'
+
+            ##############################################################
+            # Publish Api
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure Api'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Praise-Api-Prod'
+                package: '**/drop/publishapi/Praise.Api.zip'
+
+            ##############################################################
+            # Publish Gamey
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure Gamey'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go(66673944-b353-4256-b71c-0cd8751c81c0)'
+                appType: 'webApp'
+                appName: 'Gamey-WebApp-Prod'
+                package: '**/drop/publishgamey/Gamey.Api.zip'
