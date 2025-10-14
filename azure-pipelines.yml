@@ -56,6 +56,9 @@ stages:
           arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publishgamey'
           zipAfterPublish: true
           publishWebProjects: false
+
+      # Publish build artifacts to Azure Pipelines or a Windows file share.
+      - task: PublishBuildArtifacts@1
           
 - stage: 'PublishToTestStage'
   displayName: 'Publish to Test' 
@@ -66,6 +69,13 @@ stages:
         runOnce: 
           deploy:
             steps:
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.DefaultWorkingDirectory)'
+
             ##############################################################
             # Publish Web
             - task: AzureWebApp@1
@@ -105,6 +115,13 @@ stages:
         runOnce: 
           deploy:
             steps:
+
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.DefaultWorkingDirectory)'
 
             ##############################################################
             # Publish Web
