@@ -273,39 +273,52 @@ a.navbar-brand:hover {
     clear:both;
 }
 
-.hero-container {
+.page-container {
+    margin: auto;
+}
+
+.page-container-inner {
     background-color: #107878;
     margin: auto;
+    position: relative;
 }
 
-.hero-container-inner {
-    position:relative;
-}
-
-.hero-container-inner-inner {
-    width: 1170px;
+.page-container-inner-inner {
+    background-color: #107878;
+    color: white;
     margin: auto;
     display: block;
+    width: 1170px;
 }
-    .hero-container-inner-caption {
+.page-container-inner-inner {
+    width:1170px;
+}
+.hero-container-inner-caption {
         width: 550px;
-        bottom: 60px;
+        top: 410px;
         padding-left:20px;
         display: block;
         margin: auto;
         position:absolute;
     }
-@media (max-width: 600px) {
-    .hero-container-inner-caption {
-        width: 360px;
-        font-size: 12px;
+@media (max-width: 1170px) {
+    .page-container-inner-inner {
+        width: 100%;
     }
 }
-        .hero-container-inner-caption span {
-            display: block;
+@media (max-width: 600px) {
+        .hero-container-inner-caption {
+            width: 360px;
+            font-size: 10px;
+            top: 300px;
         }
+    }
 
-    .hero-container-inner a {
+    .hero-container-inner-caption span {
+        display: block;
+    }
+
+    .page-container-inner a.try-now {
         display: inline-block;
         margin-top: 10px;
         font-weight: bold;
@@ -313,8 +326,41 @@ a.navbar-brand:hover {
     }
 
     .hero-message {
-        color: white;
         font-size: 20pt;
         font-weight: bold;
         line-height: 24pt;
+    }
+
+    .white-section {
+        background-color: white;
+        color: #222222;
+        width: 100%;
+    }
+
+    .section-container {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+        .section-container img {
+            width: 40%;
+            padding-bottom: 20px;
+        }
+
+    .mission {
+        font-size: 150%;
+        font-weight: bold;
+        padding: 30px 0 10px 0;
+        display: inline-block;
+        max-width: 60%;
+    }
+
+    img.full-size {
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .no-padding {
+        padding: 0;
     }
