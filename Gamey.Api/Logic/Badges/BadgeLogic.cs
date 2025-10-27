@@ -41,7 +41,7 @@ namespace Gamey.Api.Logic.Badges
             var badgeGroupDetails = new List<BaseBadgeDetails>();
             foreach (var badgeGroup in badgeGroups)
             {
-                var earnedBadge = await IsEarned(gamer, badgeGroup);
+                var earnedBadge = await IsEarned(gameId, gamer, badgeGroup);
                 if(earnedBadge != null) badgeGroupDetails.Add(earnedBadge);
             }
 
@@ -49,7 +49,7 @@ namespace Gamey.Api.Logic.Badges
             return badgeGroupDetails;
         }
 
-        protected async Task<BaseBadgeDetails> IsEarned(Gamer gamer, BadgeGroupDetails badgeGroupDetails)
+        protected async Task<BaseBadgeDetails> IsEarned(Guid gameId, Gamer gamer, BadgeGroupDetails badgeGroupDetails)
         {
             if(gamer.id == null || badgeGroupDetails.id == null)
                 throw new Exception("Error null gamerid: " + gamer.id + " and/or badgeGroup: " + badgeGroupDetails.id);
@@ -58,7 +58,8 @@ namespace Gamey.Api.Logic.Badges
             var badgeGroupLogic = _achievementsFactory.Get(badgeGroupDetails);
 
             // attempt awarding of badge...
-            var badgeAwarded = await badgeGroupLogic.AwardBadge(gamer, badgeGroupDetails);
+            var gamerEventData = await badgeGroupLogic.ConfirmEvent(gamer.id.Value, gameId, badgeGroupDetails);
+            var badgeAwarded = await badgeGroupLogic.AwardBadge(gamer, gamerEventData, badgeGroupDetails);
 
             // if no badge then nothing earned this time round
             if (badgeAwarded == null) return null;

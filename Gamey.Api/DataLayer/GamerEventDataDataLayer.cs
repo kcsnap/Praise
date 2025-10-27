@@ -6,17 +6,19 @@ namespace Gamey.Api.DataLayer
 {    
     public class GamerEventDataDataLayer(ILogger<GameDataLayer> _logger, IGameyDbConnection _gameyDbConnection) : IGamerEventDataDataLayer
     {
-        public async Task<GamerEventData> Read(Guid gamerId, Guid gameEventId)
+        public async Task<GamerEventData> Read(Guid gamerId, Guid gameEventId, Guid groupId)
         {
             var response = new List<GamerEventData>();
 
             try
             {
-                var query = "SELECT * FROM GamerEventData g WHERE g.GamerId = @gamerId AND g.GameEventId = @gameEventId";
+                var query = "SELECT * FROM GamerEventData g WHERE g.GamerId = @gamerId AND g.GameEventId = @gameEventId " +
+                    "AND (g.BadgeGroupDetailsId = @groupId OR g.PrizeGroupDetailsId = @groupId)";
 
                 // Build query definition
                 var parameterizedQuery = new QueryDefinition(query).WithParameter("@gamerId", gamerId.ToString())
-                                                                   .WithParameter("@gameEventId", gameEventId.ToString());
+                                                                   .WithParameter("@gameEventId", gameEventId.ToString())
+                                                                   .WithParameter("@groupId", groupId.ToString());
 
                 // Query multiple items from container as raw JSON
                 using var filteredFeed = _gameyDbConnection.GamerEventDataContainer.GetItemQueryIterator<GamerEventData>(
@@ -41,7 +43,6 @@ namespace Gamey.Api.DataLayer
             }
         }
 
-        
         public async Task<GamerEventData> Save(GamerEventData gamerEventData)
         {
             try

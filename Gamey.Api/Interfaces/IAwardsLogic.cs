@@ -4,7 +4,8 @@ namespace Gamey.Api.Logic
 {
     public interface IAwardsLogic
     {
-        Task<BaseBadgeDetails> AwardBadge(Gamer gamer, BadgeGroupDetails badgeGroupDetails);
+        Task<GamerEventData> ConfirmEvent(Guid gamerId, Guid gameId, BadgeGroupDetails badgeGroupDetails);
+        Task<BaseBadgeDetails> AwardBadge(Gamer gamer, GamerEventData gamerEventData, BadgeGroupDetails badgeGroupDetails);
     }
 
     public interface ISpecialBadgeGroupLogic : IAwardsLogic;

@@ -30,7 +30,7 @@ namespace Gamey.Api.Logic.Prizes
             var newWallet = await _tokenWalletLogic.GetOrCreateWallet(gamerId);
 
             // reteieve the current count for this event and gamer
-            var gamerEventData = await _gamerEventDataDataLayer.Read(gamerId, gameEventCode.id.Value);
+            var gamerEventData = await _gamerEventDataDataLayer.Read(gamerId, gameEventCode.id.Value, prize.id.Value);
 
             if(gamerEventData == null)
             {
@@ -38,25 +38,31 @@ namespace Gamey.Api.Logic.Prizes
                 gamerEventData = new GamerEventData
                 {
                     GamerId = gamerId,
-                    GameEventId = gameEventCode.id.Value                    
+                    GameEventId = gameEventCode.id.Value,
+                    PrizeGroupDetailsId = prize.id.Value,
                 };
             }
 
             // check if last event date is not today (null is new so award), then award crypto
             // Crypto can only be earned once per day
-            if (!gamerEventData.LastEventDate.HasValue || gamerEventData.LastEventDate.Value.Date != DateTime.Now.Date)
+            if (gamerEventData.LastEventDate.Date != DateTime.Now.Date)
             {
                 // update prize amount
                 await _tokenWalletLogic.SendToken(gamerId, prize.PrizeAmount);
+                gamerEventData.LastEventDate = DateTime.Now;
+                await _gamerEventDataDataLayer.Save(gamerEventData);
+
                 return prize;
             }
+            else
+            {
+                // update last action date
+                gamerEventData.LastEventDate = DateTime.Now;
+                await _gamerEventDataDataLayer.Save(gamerEventData);
 
-            // update last action date
-            gamerEventData.LastEventDate = DateTime.Now;
-            await _gamerEventDataDataLayer.Save(gamerEventData);
-
-            // return null as already earned...
-            return null;
+                // return null as already earned for today...
+                return null;
+            }
         }
     }
 }

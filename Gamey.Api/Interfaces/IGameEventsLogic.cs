@@ -1,5 +1,4 @@
 ﻿using Gamey.Api.Models;
-using Microsoft.Extensions.Primitives;
 
 namespace Gamey.Api.Interfaces
 {
