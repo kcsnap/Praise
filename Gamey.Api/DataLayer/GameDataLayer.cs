@@ -1,10 +1,12 @@
 ﻿using Gamey.Api.DataLayer.Interfaces;
+using Gamey.Api.Interfaces;
+using Gamey.Api.Logic;
 using Gamey.Api.Models;
 using Microsoft.Azure.Cosmos;
 
 namespace Gamey.Api.DataLayer
 {    
-    public class GameDataLayer(ILogger<GameDataLayer> _logger, IGameyDbConnection _gameyDbConnection) : IGameDataLayer
+    public class GameDataLayer(ILogger<GameDataLayer> _logger, IGameyDbConnection _gameyDbConnection, IDeterministicEncryption _deterministicEncryption) : IGameDataLayer
     {
         public async Task<Game> Save(Game game)
         {
@@ -31,14 +33,18 @@ namespace Gamey.Api.DataLayer
             }
         }
 
-        public async Task<Game> ReadByClientId(string clientId)
+        public async Task<Game> ReadByClientIdAndApiKey(string clientId, string apiKey)
         {
             try
             {
-                var query = "SELECT * FROM game g WHERE g.ClientId = @clientId";
+                // encrypt the api key to compare with db value...
+                var encryptedApiKey = await _deterministicEncryption.Encrypt(apiKey);
+
+                var query = "SELECT * FROM game g WHERE g.ClientId = @clientId AND g.EncryptedApiKey = @encryptedApiKey";
 
                 // Build query definition
-                var parameterizedQuery = new QueryDefinition(query: query).WithParameter("@clientId", clientId);
+                var parameterizedQuery = new QueryDefinition(query: query).WithParameter("@clientId", clientId)
+                                                                          .WithParameter("@encryptedApiKey", encryptedApiKey);
 
                 // Query multiple items from container
                 using FeedIterator<Game> filteredFeed = _gameyDbConnection.GameContainer.GetItemQueryIterator<Game>(

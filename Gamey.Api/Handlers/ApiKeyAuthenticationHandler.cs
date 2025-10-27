@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Gamey.Api.Interfaces;
+using Gamey.Api.Logic;
+using Gamey.Api.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -10,16 +13,19 @@ namespace Gamey.Api.Handlers
         public const string ApiKeyHeaderName = "X-API-KEY";
         public const string ClientIdHeaderName = "X-CLIENT-ID";
         private readonly IConfiguration _configuration;
+        private readonly IGameLogic _gameLogic;
 
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IGameLogic gameLogic)
             : base(options, logger, encoder, clock)
         {
             _configuration = configuration;
+            _gameLogic = gameLogic;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -36,12 +42,10 @@ namespace Gamey.Api.Handlers
             var providedApiKey = apiKeyHeaderValues.FirstOrDefault();
             var providedClientId = clientIdHeaderValues.FirstOrDefault();
 
-            // TODO - replace this with check for clientid && apikey from db
-            var configuredClientId = "_clientid";
-            var configuredApiKey = "_apikey";
-
-            if (string.IsNullOrEmpty(providedApiKey) || string.IsNullOrEmpty(providedClientId) || 
-                providedApiKey != configuredApiKey || providedClientId != configuredClientId)
+            Game game = null;
+            Task.Run(async() => game = await _gameLogic.SetGame(providedClientId, providedApiKey)).Wait();
+                        
+            if (game == null)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid API Key and/or Client ID."));
             }

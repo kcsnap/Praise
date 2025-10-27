@@ -86,6 +86,7 @@ builder.Services.AddSingleton<IGameLogic, GameLogic>();
 builder.Services.AddSingleton<ISpecialBadgeGroupLogic, SpecialBadgeGroupAchievementLogic>();
 builder.Services.AddSingleton<ICountBadgeGroupLogic, CountBadgeGroupLogic>();
 builder.Services.AddSingleton<IStreakBadgeGroupLogic, StreakBadgeGroupLogic>();
+builder.Services.AddSingleton<IDeterministicEncryption, DeterministicEncryption>();
 builder.Services.AddSingleton<ISecureEncryption, SecureEncryption>();
 builder.Services.AddSingleton<ITokenWalletLogic, TokenWalletLogic>();
 builder.Services.AddSingleton<IPrizeGroupLogic, GamePrizeLogic>();
@@ -106,7 +107,7 @@ builder.Services.AddSingleton<IPrizeGroupDataLayer, PrizeGroupDataLayer>();
 // Config options
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.ConfigNode));
 builder.Services.Configure<TokenContractOptions>(builder.Configuration.GetSection(TokenContractOptions.ConfigNode));
-builder.Services.Configure<TokenEncryptionOptions>(builder.Configuration.GetSection(TokenEncryptionOptions.ConfigNode));
+builder.Services.Configure<EncryptionOptions>(builder.Configuration.GetSection(EncryptionOptions.ConfigNode));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

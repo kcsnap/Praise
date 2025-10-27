@@ -4,7 +4,7 @@ namespace Gamey.Api.DataLayer.Interfaces
 {
     public interface IGameDataLayer
     {
-        Task<Game> ReadByClientId(string clientId);
+        Task<Game> ReadByClientIdAndApiKey(string clientId, string apiKey);
         Task<Game> Save(Game game);
     }
 }
