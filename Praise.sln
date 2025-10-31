@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IaC", "IaC", "{48DF9D6E-4FD
 		IaC\test.parameters.json = IaC\test.parameters.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Praise.Api", "Tests.Praise.Api\Tests.Praise.Api.csproj", "{64FEAF70-256D-4DD9-ABCC-1D048B30C71E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B18A7EFE-F107-4E6C-A21D-C9E11DC9C758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64FEAF70-256D-4DD9-ABCC-1D048B30C71E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64FEAF70-256D-4DD9-ABCC-1D048B30C71E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64FEAF70-256D-4DD9-ABCC-1D048B30C71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64FEAF70-256D-4DD9-ABCC-1D048B30C71E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{27E25089-19BA-464C-949E-B1211E7A88C7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{73074BB5-8709-4400-A024-39D89DF8C2D8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{8FF8FFD5-B821-41B4-A281-4EFE681FFC9D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{64FEAF70-256D-4DD9-ABCC-1D048B30C71E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB35BF47-B515-4104-BE63-A467C913F0E2}

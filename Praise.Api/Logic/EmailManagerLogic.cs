@@ -46,9 +46,8 @@ namespace Praise.Api.Logic
                 CreateSmtpEmail result = await apiInstance.SendTransacEmailAsync(sendSmtpEmail);
             }
             catch (Exception e)
-            {
-                //await logging.WriteRecoverableError("EMAIL FAILURE: " + e.Message);
-                throw new NotImplementedException(e.Message, e);
+            {                
+                throw new Exception(e.Message, e);
             }
         }
     }

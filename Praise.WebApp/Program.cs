@@ -17,6 +17,7 @@ using Auth0.AspNetCore.Authentication;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.HttpOverrides;
 using Praise.Models.Configuration;
 using Praise.WebApp.Components;
 using Praise.WebApp.GraphQL;
@@ -71,6 +72,11 @@ builder.Services.AddSingleton<ISchema, EmployeeDetailsSchema>();
 
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+}); 
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -20,6 +20,7 @@ builder.Services.AddSingleton<IPraiseDetailsDataLayer, PraiseDetailsDataLayer>()
 builder.Services.AddSingleton<IEmailManagerLogic, EmailManagerLogic>();
 //builder.Services.AddSingleton<ISendPraiseEventBindings, SendPraiseEventBindings>();
 builder.Services.AddSingleton<IGameWrapperLogic, GameWrapperLogic>();
+builder.Services.AddSingleton<IHttpMethodWrapper, HttpMethodWrapper>();
 builder.Services.AddSingleton<IPrizeLogic, PrizeLogic>();
 
 // events
