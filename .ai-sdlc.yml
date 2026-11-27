@@ -1,0 +1,158 @@
+# Written by orb-importer for Orbulus code-only maintenance.
+# Describes this repository as found at the revision below. Review before merging.
+version: 1
+repo:
+  name: "Praise"
+  owner: "kcsnap"
+  description: "Praise is a workplace peer-recognition application. Signed-in users send a colleague, identified by email address, one of a fixed set of praise types, see the praises they have sent and received, and take part in gamification: badges, achievements, streaks and token prizes for giving praise and signing in. A separate gamification service (Gamey.Api) holds games, gamers, game events, badges, achievements, prizes, streaks and token wallets. Stack: a .NET solution (Praise.sln) with ASP.NET Core controller APIs (Praise.Api, Gamey.Api), a Blazor web front end (Praise.WebApp), an admin app shell (Praise.AdminApp), a .NET MAUI client (Praise.App), shared model libraries (Praise.Models, Gamey.Models) and MSTest test projects. Data is stored in Azure Cosmos DB. A Next.js starter project (praise-vercel-nextjs) is also present."
+stack:
+  frontend:
+    framework: "Blazor Web App, interactive server components (ASP.NET Core Razor Components) with Blazor Bootstrap"
+    language: "C#"
+    location: "Praise.WebApp"
+  api:
+    framework: "ASP.NET Core Web API with MVC controllers (Gamey.Api and Praise.Api)"
+    language: "C#"
+    location: "Gamey.Api"
+    endpoints:
+      - "PATCH /achievements/{achievementId}"
+      - "GET /badges"
+      - "GET /game"
+      - "GET /gameevent"
+      - "POST /gameevent"
+      - "POST /gamers"
+      - "GET /gamers/{gamerEmail}"
+      - "GET /gamers/{gamerId}/achievements"
+      - "PATCH /gamers/{gamerId}/achievements/{achievementId}"
+      - "GET /gamers/{gamerId}/prizes"
+      - "GET /gamers/{gamerId}/streaks"
+      - "GET /praise"
+      - "GET /weatherforecast[controller]"
+  database:
+    engine: "Azure Cosmos DB (NoSQL API)"
+    orm: "None; Microsoft.Azure.Cosmos SDK containers with parameterised SQL queries"
+    tables:
+      - "Achievements"
+      - "ActionHistory"
+      - "BadgeGroups"
+      - "Badges"
+      - "GameEvents"
+      - "GamerEventData"
+      - "Gamers"
+      - "PraiseContainer"
+      - "PrizeGroups"
+      - "Wallet"
+      - "game"
+risk_areas:
+  high:
+    - ".github/workflows/**"
+    - "ClerkAuth/**"
+    - "Praise.WebApp/Components/Pages/Account/**"
+    - "Gamey.Api/Configuration/EncryptionOptions.cs"
+    - "Gamey.Api/Interfaces/IDeterministicEncryption.cs"
+    - "Gamey.Api/Interfaces/ISecureEncryption.cs"
+    - "Gamey.Api/Logic/DeterministicEncryption.cs"
+    - "Gamey.Api/Logic/SecureEncryption.cs"
+    - "Praise.WebApp/Components/Pages/EarnCryptoForGivingPraise.razor"
+    - "Tests/Crypto_Tests.CryptoManager/**"
+    - "Gamey.Api/Handlers/**"
+    - "Gamey.Api/Configuration/**"
+    - "Gamey.Api/Logic/TokenWalletLogic.cs"
+    - "Gamey.Api/Program.cs"
+    - "Praise.Api/Program.cs"
+    - "Praise.Api/Configuration/**"
+    - "Praise.Api/Logic/PraiseUserLogic.cs"
+    - "Praise.WebApp/Program.cs"
+    - "Praise.WebApp/Configuration/**"
+    - "Praise.WebApp/Logic/PraiseApiWrapper.cs"
+    - "Praise.WebApp/Logic/PraiseAuthentication.cs"
+  medium:
+    - "Gamey.Api/Controllers/**"
+    - "Praise.Api/Controllers/**"
+    - "Gamey.Api/DataLayer/**"
+    - "Praise.Api/DataLayer/**"
+    - "Gamey.Api/Logic/**"
+    - "Praise.Api/Logic/**"
+    - "Gamey.Models/**"
+    - "Praise.Models/**"
+  low:
+    - "Praise.WebApp/wwwroot/**"
+    - "praise-vercel-nextjs/**"
+    - "Praise.App/Pages/**"
+    - "Praise.App/PageModels/**"
+    - "Praise.AdminApp/**"
+    - "praise-vercel-nextjs/app/**"
+    - "Praise.Tests.Engine/**"
+    - "Praise.Tests.Logic/**"
+    - "Tests.Praise.Api/**"
+automation:
+  allow_low_risk_auto_merge: false
+  allow_low_risk_production_deploy: false
+branch_naming: "orb/{issue}-{slug}"
+import:
+  mode: "code-only"
+  analysed_revision: "19d88e10abdca289bd3ab279ffcb76435c3a041a"
+  analysed_at: "2026-11-27T15:28:04Z"
+  importer_version: "0.5.0"
+  baseline: "docs/orbulus/baseline.md"
+  checks:
+    - name: "build"
+      command: "dotnet build Praise.sln"
+      cwd: "."
+      status: "not-run"
+      note: "not run by Orbulus"
+    - name: "build"
+      command: "npm run build"
+      cwd: "praise-vercel-nextjs"
+      status: "not-run"
+      note: "not run by Orbulus"
+    - name: "lint"
+      command: "npm run lint"
+      cwd: "praise-vercel-nextjs"
+      status: "not-run"
+      note: "not run by Orbulus"
+    - name: "test"
+      command: "dotnet test Praise.sln"
+      cwd: "."
+      status: "not-run"
+      note: "not run by Orbulus"
+  units:
+    - root: "Gamey.Api"
+      kind: "http-api"
+      primary: true
+    - root: "Gamey.Models"
+      kind: "library"
+      primary: false
+    - root: "Praise.AdminApp"
+      kind: "http-api"
+      primary: false
+    - root: "Praise.Api"
+      kind: "http-api"
+      primary: false
+    - root: "Praise.App"
+      kind: "cli"
+      primary: false
+    - root: "Praise.Engine"
+      kind: "cli"
+      primary: false
+    - root: "Praise.Engines"
+      kind: "library"
+      primary: false
+    - root: "Praise.Models"
+      kind: "library"
+      primary: false
+    - root: "Praise.WebApp"
+      kind: "http-api"
+      primary: true
+    - root: "Tests.Praise.Api"
+      kind: "library"
+      primary: false
+    - root: "praise-vercel-nextjs"
+      kind: "web-frontend"
+      primary: false
+  deploys_on_merge: false
+  limitations:
+    - "Orbulus has not run any of the repository's commands or tests; every check is listed as not-run."
+    - "Quality review: \"every name is grounded in the inventory\" did not pass (owner: survey)."
+    - "Quality review: \"every unit, page, endpoint and table is described\" did not pass (owner: survey)."
+  truncated: {}
